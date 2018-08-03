@@ -11,7 +11,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser((id, done) => {
   User.findById(id).then(user => done(null, user));
-}
+});
 
 passport.use(new GoogleStrategy({
     clientID: keys.googleClientID,

@@ -11,4 +11,8 @@ module.exports = (app) => {
 
   // Will see the code in the URL and retrieve user profile
   app.get('/auth/google/callback', passport.authenticate('google'));
+
+  app.get('/api/current_user', (req, res) => {
+    res.send(req.user);
+  });
 }
