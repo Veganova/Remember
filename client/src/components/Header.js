@@ -5,7 +5,7 @@ class Header extends Component {
   renderContent() {
     switch(this.props.auth) {
       case null:
-        return <li><div>asdfasdf</div></li>;
+        return;
       case false:
         return <li><a href="/auth/google">Login</a></li>;
       default:
