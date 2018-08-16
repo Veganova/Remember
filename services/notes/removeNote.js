@@ -9,7 +9,7 @@ async function removeNote(userId, starId) {
     console.log('deleting root -- send a confirmation');
   }
   const trashStar = await Star.findOne({"parentId":userId, "data": "Trash"});
-  return await updateNote(starId, {parentId: trashStar.id});
+  return await updateNote(userId, starId, {parentId: trashStar.id});
 }
 
 module.exports = {removeNote};
