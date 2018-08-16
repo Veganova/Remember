@@ -1,3 +1,4 @@
+// Each star with userId = parentId is a root star which will represent a unique page in the front end.
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
