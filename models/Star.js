@@ -4,8 +4,9 @@ const { Schema } = mongoose;
 
 
 const starSchema = new Schema({
-  parentId: { type:String, required: false },
-  data: { type:String, required: false },
+  userId: { type:String, required: true },
+  parentId: { type:String, required: true},
+  data: { type:String, required: true},
 });
 
 mongoose.model('stars', starSchema);
