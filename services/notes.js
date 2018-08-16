@@ -1,3 +1,6 @@
+//TODO : MIDDLEWARE to check logged in, delete, update, move (update parent id)
+// front end: form to call these, display notes
+
 const _ = require('lodash')
 const mongoose = require('mongoose');
 
@@ -29,11 +32,6 @@ module.exports = (app) => {
   });
 }
 
-// app.use('/api/:note', function (req, res, next) {
-//   console.log('Request Type:', req.method)
-//   next()
-// })
-
 async function addStar(userId, parentId, data) {
   const existingStar = await Star.findOne({userId, parentId, data});
   if (existingStar) {
@@ -48,7 +46,7 @@ async function findChildren (parentId) {
 
 }
 
-function getByParentIdForUser (allUserStars) {
+function getByParentIdForUser(allUserStars) {
   const byParentId = {};
   allUserStars.forEach((star) => {
     if (!byParentId[star.parentId]) {
@@ -59,6 +57,7 @@ function getByParentIdForUser (allUserStars) {
     }
     byParentId[star.parentId].push(star);
   });
+  console.log("byParentId", byParentId);
   return byParentId;
 }
 
@@ -71,17 +70,18 @@ async function showNotes(userId) {
 function constructNotes(byParentId, parentId) {
   const notes = [];
   const parentStars = byParentId[parentId];
-  if (parentStars) {
-  parentStars.forEach((parentStar) => {
+
+  parentStars.forEach((parentStar, index, theArray) => {
     const childStars = constructNotes(byParentId, parentStar.id);
-    parentStar.children = childStars;
-    notes.push(parentStar);
+    const copy = JSON.parse(JSON.stringify(parentStar));
+    copy.childStars = childStars;
+    notes.push(copy);
   });
-}
+
   return notes;
 }
 
-async function findChildren(parentId) {
+ async function findChildren(parentId) {
   console.log(parentId);
   const stars = await Star.find({ parentId });
   const result =  _.map(stars, async (star) => {
