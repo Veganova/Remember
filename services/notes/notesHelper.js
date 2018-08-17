@@ -21,7 +21,6 @@ function getByParentIdForUser(allUserStars) {
     }
     byParentId[star.parentId].push(star);
   });
-  console.log("byParentId", byParentId);
   return byParentId;
 }
 
