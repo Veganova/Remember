@@ -1,25 +1,25 @@
 const mongoose = require('mongoose');
 const Star = mongoose.model('stars');
-const {getByParentIdForUser} = require('./notesHelper');
+const {getByParentIdForUser} = require('./starsHelper');
 
-async function showNotes(userId) {
+async function showStars(userId) {
   const allUserStars = await Star.find({ userId });
   const byParentId = getByParentIdForUser(allUserStars);
-  return constructNotes(byParentId, userId);
+  return constructStars(byParentId, userId);
 }
 
-function constructNotes(byParentId, parentId) {
-  const notes = [];
+function constructStars(byParentId, parentId) {
+  const stars = [];
   const parentStars = byParentId[parentId];
 
   parentStars.forEach((parentStar, index, theArray) => {
-    const childStars = constructNotes(byParentId, parentStar.id);
+    const childStars = constructStars(byParentId, parentStar.id);
     const copy = JSON.parse(JSON.stringify(parentStar));
     copy.childStars = childStars;
-    notes.push(copy);
+    stars.push(copy);
   });
 
-  return notes;
+  return stars;
 }
 
-module.exports = {showNotes};
+module.exports = {showStars};

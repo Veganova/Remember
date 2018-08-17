@@ -3,7 +3,7 @@ const Star = mongoose.model('stars');
 
 
 module.exports = {
-  "addNote": async (userId, parentId, data) => {
+  "addStar": async (userId, parentId, data) => {
     const existingStar = await Star.findOne({userId, parentId, data});
     if (existingStar) {
       return existingStar;

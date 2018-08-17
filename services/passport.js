@@ -6,7 +6,7 @@ const keys = require('../config/keys');
 const User = mongoose.model('users');
 const Star = mongoose.model('stars');
 
-const {configNotes} = require('../services/notes/configNotes');
+const {configStars} = require('../services/stars/configStars');
 
 passport.serializeUser((user, done) => {
   done(null, user.id);
@@ -30,7 +30,7 @@ passport.use(new GoogleStrategy({
     }
 
     const user = await new User({googleId: profile.id}).save();
-    configNotes(user);
+    configStars(user);
 
 
     done(null, user);

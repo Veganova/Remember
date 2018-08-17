@@ -1,9 +1,9 @@
 //TODO : MIDDLEWARE to check logged in, delete, update, move (update parent id)
-// front end: form to call these, display notes
-// refactor all 'notes' -> 'stars'
+// front end: form to call these, display stars
+// refactor all 'stars' -> 'stars'
 
 
-// Exports for notes
+// Exports for stars
 const _ = require('lodash')
 const mongoose = require('mongoose');
 
@@ -24,7 +24,7 @@ function getByParentIdForUser(allUserStars) {
   return byParentId;
 }
 
-// good for getting just upper layer of notes fast
+// good for getting just upper layer of stars fast
  async function findChildren(parentId) {
   console.log(parentId);
   const stars = await Star.find({ parentId });
