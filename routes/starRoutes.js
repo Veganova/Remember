@@ -7,8 +7,9 @@ module.exports = (app) => {
   app.use("/api/star", (req, res, next) => {
     if (!req.user) {
       res.send({error: 'No user'});
+    } else {
+      next();
     }
-    next();
   });
 
   app.post('/api/star/add', async (req, res) => {

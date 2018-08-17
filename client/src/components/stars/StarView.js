@@ -1,25 +1,41 @@
 import _ from 'lodash';
+import $ from 'jquery';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import {Tabs, Tab} from 'react-materialize';
 
 class StarView extends Component {
+
   displayStar(star) {
     return star.data;
   }
+  constructor(props) {
+    super(props);
+    this.asd = this.asd.bind(this);
+  }
+  asd(e) {
+    console.log("tab");
+  }
 
-      //<li key={star.id}>
-       // {console.log(star.data)}
-        //<h3> {star.data} </h3>
-      //</li>
   displayStars(listOfStars) {
     return (
+    <Tabs className='tab-demo z-depth-1' onLoad={()=>$('tab').tabs()}>
+      { _.map(listOfStars, (star) => {
+        return <Tab className='tab' key={star["_id"]} title={this.displayStar(star)} onClick={this.asd}>{this.displayStarsFull(star.childStars)}</Tab>
+      })}
+    </Tabs>
+  )
+  }
+
+  displayStarsFull(listOfStars) {
+    return (
     <ul className="collection">
-      {_.map(listOfStars, (star) => {
+      { _.map(listOfStars, (star) => {
         return (
-          <li key={star.id} className="collection-item">
-          <div key={star.id}> {this.displayStar(star)} </div>
-          <div key={star.id}> {this.displayStars(star.childStars)} </div>
+          <li key={star["_id"]} className="collection-item">
+            <div> {this.displayStar(star)} </div>
+            <div> {this.displayStarsFull(star.childStars)} </div>
           </li>
       )
     })}
@@ -41,6 +57,7 @@ class StarView extends Component {
         {this.displayAllStars()}
       </div>
     )
+
   }
 }
 
