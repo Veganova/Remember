@@ -3,31 +3,23 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import ThemeSwitcher from './ThemeSwitcher';
+import * as actions from '../../actions';
 
 class StarView extends Component {
 
-  displayStar(star) {
-    return star.data;
-  }
-  constructor(props) {
-    super(props);
-    this.asd = this.asd.bind(this);
-  }
-  asd(e) {
-    console.log("tab");
-  }
-
   displayStars(listOfStars) {
     return (
-<div> {
-    // <Tabs className='tab-demo z-depth-1' onLoad={()=>$('tab').tabs()}>
-    //   { _.map(listOfStars, (star) => {
-    //     return <Tab className='tab' key={star["_id"]} title={this.displayStar(star)} onClick={this.asd}>{this.displayStarsFull(star.childStars)}</Tab>
-    //   })}
-    // </Tabs>
-} nothing
-  </div>
-  )
+      <ul className="nav nav-tabs">
+      { _.map(listOfStars, (star) => {
+        return <li key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></li>
+      })}
+      </ul>
+    )
+  }
+
+  displayStar(star) {
+    return star.data;
   }
 
   displayStarsFull(listOfStars) {
@@ -45,21 +37,44 @@ class StarView extends Component {
   )
   }
 
+  displayChildStars(listOfStars) {
+    return (
+      <div className="tab-content">
+      {_.map(listOfStars, (star) => {
+        return <div key={star['_id']} id={star.data} className="tab-pane fade in active">{this.displayStarsFull(star.childStars)} </div>
+      })}
+      </div>
+    )
+
+  }
+
   displayAllStars() {
     return (
       <div>
           {this.props.star ? this.displayStars(this.props.star) : "loading"}
+          {this.props.star && this.displayChildStars(this.props.star)}
       </div>
     )
   }
 
   render() {
+      console.log('rendering!');
     return (
       <div>
         {this.displayAllStars()}
+        <button onClick={this.addStarAction}>Add Function</button>
+        <div>{JSON.stringify(this.props.star)}</div>
       </div>
     )
+  }
 
+  addStarAction() {
+    this.props.addStar('', 'justaddedbyreact8');
+  }
+
+  constructor(props) {
+    super(props);
+    this.addStarAction = this.addStarAction.bind(this);
   }
 }
 
@@ -67,4 +82,4 @@ function mapStateToProps({ star }) {
   return { star };
 }
 
-export default connect(mapStateToProps)(StarView);
+export default connect(mapStateToProps, actions)(StarView);
