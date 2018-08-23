@@ -3,7 +3,6 @@ import $ from 'jquery';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {Tabs, Tab} from 'react-materialize';
 
 class StarView extends Component {
 
@@ -20,11 +19,14 @@ class StarView extends Component {
 
   displayStars(listOfStars) {
     return (
-    <Tabs className='tab-demo z-depth-1' onLoad={()=>$('tab').tabs()}>
-      { _.map(listOfStars, (star) => {
-        return <Tab className='tab' key={star["_id"]} title={this.displayStar(star)} onClick={this.asd}>{this.displayStarsFull(star.childStars)}</Tab>
-      })}
-    </Tabs>
+<div> {
+    // <Tabs className='tab-demo z-depth-1' onLoad={()=>$('tab').tabs()}>
+    //   { _.map(listOfStars, (star) => {
+    //     return <Tab className='tab' key={star["_id"]} title={this.displayStar(star)} onClick={this.asd}>{this.displayStarsFull(star.childStars)}</Tab>
+    //   })}
+    // </Tabs>
+} nothing
+  </div>
   )
   }
 
