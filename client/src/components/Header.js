@@ -15,7 +15,6 @@ class Header extends Component {
   }
 
   render() {
-    console.log(this.props);
     return (
       <nav>
           <div className="nav-wrapper">
@@ -29,7 +28,7 @@ class Header extends Component {
                 {this.renderContent()}
               </ul>
           </div>;
-      </nav>  
+      </nav>
     );
   }
 }

@@ -8,6 +8,9 @@ async function showStars(userId) {
   return constructStars(byParentId, userId);
 }
 
+/**
+*   Needs there to be a mapping for every single star id (below the parentId) -> list of children stars
+**/
 function constructStars(byParentId, parentId) {
   const stars = [];
   const parentStars = byParentId[parentId];
@@ -22,4 +25,4 @@ function constructStars(byParentId, parentId) {
   return stars;
 }
 
-module.exports = {showStars};
+module.exports = {showStars, constructStars};

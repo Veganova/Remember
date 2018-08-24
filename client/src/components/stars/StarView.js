@@ -28,7 +28,7 @@ class StarView extends Component {
       { _.map(listOfStars, (star) => {
         return (
           <li key={star["_id"]} className="collection-item">
-            <div> {this.displayStar(star)} </div>
+            <div> {this.displayStar(star)} </div> <button onClick={() => {this.props.removeStar(star["_id"])}}> X </button>
             <div> {this.displayStarsFull(star.childStars)} </div>
           </li>
       )
@@ -58,18 +58,32 @@ class StarView extends Component {
   }
 
   render() {
-      console.log('rendering!');
     return (
       <div>
         {this.displayAllStars()}
         <button onClick={this.addStarAction}>Add Function</button>
-        <div>{JSON.stringify(this.props.star)}</div>
       </div>
     )
   }
 
+  getStarWithData(stars, data) {
+    for (let i = 0; i < stars.length; i++) {
+      if (data === stars[i]['data']) {
+        return stars[i];
+      }
+      let childStar = this.getStarWithData(stars[i].childStars, data);
+      if (childStar) {
+        return childStar;
+      }
+    }
+    return null;
+  }
+
   addStarAction() {
-    this.props.addStar('', 'justaddedbyreact8');
+    var d = new Date();
+
+    const star = this.getStarWithData(this.props.star, 'Stars');
+    this.props.addStar(star['_id'], d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds());
   }
 
   constructor(props) {

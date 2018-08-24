@@ -26,14 +26,12 @@ function getByParentIdForUser(allUserStars) {
 
 // good for getting just upper layer of stars fast
  async function findChildren(parentId) {
-  console.log(parentId);
   const stars = await Star.find({ parentId });
   const result =  _.map(stars, async (star) => {
     const newStar = {};
     newStar.id = star.id;
     newStar.data = star.data;
     const childStars = await findChildren(star.id);
-    console.log(childStars);
     newStar.stars = childStars;
     return newStar;
   });
