@@ -1,36 +1,18 @@
-import { GET_STARS, ADD_STAR, REMOVE_STAR } from '../actions/types'
+import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR } from '../actions/types'
 
-function getStarWithId(stars, id) {
-  console.log("GET_STAR_ID", stars, id);
-  for (let i = 0; i < stars.length; i++) {
-    if (id === stars[i]['_id']) {
-      return stars[i];
-    }
-    let childStar = getStarWithId(stars[i].childStars, id);
-    if (childStar) {
-      return childStar;
-    }
-  }
-  return null;
+function removeStar(state, removedStar) {
+  const newState = JSON.parse(JSON.stringify(state));
+  console.log(removedStar);
+  console.log(newState);
+  const newerState = newState.filter(star => removedStar['_id'] !== star['_id']);
+  console.log(newerState);
+  return newerState;
 }
 
-function addStars(state, stars) {
-  for (let i = 0; i < stars.length; i++) {
-    const star = stars[i];
-    const dup = getStarWithId(state, star['_id']);
-    if (dup) {
-      console.log('DUP ADDED!');
-      continue;
-    }
-
-    const parent = getStarWithId(state, star['parentId']);
-    if (parent) {
-      parent.childStars.push(star);
-    } else {
-      state.push(star);
-    }
-  }
-  return state;
+function updateStar(state, updatedStar) {
+   const newState = removeStar(state, updatedStar)
+   newState.push(updatedStar);
+   return newState;
 }
 
 export default function(state = null, action) {
@@ -39,9 +21,12 @@ export default function(state = null, action) {
       return action.payload || [];
     case ADD_STAR:
       const newState = JSON.parse(JSON.stringify(state));
-      return addStars(newState, action.payload);
+      newState.concat(action.payload);
+      return newState;
+    case UPDATE_STAR:
+      return updateStar(state, action.payload);
     case REMOVE_STAR:
-      return state;
+      return updateStar(state, action.payload);
     default:
       return state;
   }

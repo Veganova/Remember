@@ -10,20 +10,6 @@ const mongoose = require('mongoose');
 const User = mongoose.model('users');
 const Star = mongoose.model('stars');
 
-function getByParentIdForUser(allUserStars) {
-  const byParentId = {};
-  allUserStars.forEach((star) => {
-    if (!byParentId[star.parentId]) {
-      byParentId[star.parentId] = [];
-    }
-    if (!byParentId[star.id]) {
-      byParentId[star.id] = [];
-    }
-    byParentId[star.parentId].push(star);
-  });
-  return byParentId;
-}
-
 // good for getting just upper layer of stars fast
  async function findChildren(parentId) {
   const stars = await Star.find({ parentId });
@@ -37,4 +23,4 @@ function getByParentIdForUser(allUserStars) {
   });
   return Promise.all(result);
 }
-module.exports = {getByParentIdForUser, findChildren};
+module.exports = {findChildren};

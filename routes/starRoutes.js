@@ -31,7 +31,7 @@ module.exports = (app) => {
   app.put('/api/star/update', async (req, res) => {
     const body = req.body;
     const userId = req.user.id;
-    const starId = req.body.starId;
+    const starId = req.body.id;
     const update = req.body.update;
     const result = await updateStar(userId, starId, update);
     res.send(result);

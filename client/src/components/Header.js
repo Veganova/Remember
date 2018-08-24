@@ -24,6 +24,9 @@ class Header extends Component {
                 >
                 Remember
               </Link>
+              <Link
+                to={this.props.auth ? '/star/view' : '/'}
+                >star view</Link>
               <ul className="right">
                 {this.renderContent()}
               </ul>

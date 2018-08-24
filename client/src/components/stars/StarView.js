@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ThemeSwitcher from './ThemeSwitcher';
 import * as actions from '../../actions';
-
+import { formatStars } from '../../helpers'
 class StarView extends Component {
 
   displayStars(listOfStars) {
@@ -48,22 +48,32 @@ class StarView extends Component {
 
   }
 
-  displayAllStars() {
+  displayAllStars(formattedStars) {
     return (
       <div>
-          {this.props.star ? this.displayStars(this.props.star) : "loading"}
-          {this.props.star && this.displayChildStars(this.props.star)}
+          {this.displayStars(formattedStars)}
+          {this.displayChildStars(formattedStars)}
       </div>
     )
   }
 
   render() {
+    if (this.props.star && this.props.auth) {
+    console.log(this.props.star);
+    const formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+    console.log(formattedStars);
     return (
       <div>
-        {this.displayAllStars()}
+        {this.displayAllStars(formattedStars)}
         <button onClick={this.addStarAction}>Add Function</button>
       </div>
     )
+  }
+  else {
+    return (
+      <div>Loading ...</div>
+    )
+  }
   }
 
   getStarWithData(stars, data) {
@@ -92,8 +102,8 @@ class StarView extends Component {
   }
 }
 
-function mapStateToProps({ star }) {
-  return { star };
+function mapStateToProps({ auth, star }) {
+  return { auth, star };
 }
 
 export default connect(mapStateToProps, actions)(StarView);
