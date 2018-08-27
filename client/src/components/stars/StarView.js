@@ -5,7 +5,9 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import ThemeSwitcher from './ThemeSwitcher';
 import * as actions from '../../actions';
-import { formatStars } from '../../helpers'
+import { formatStars } from '../../helpers';
+import Nestable from 'react-nestable';
+
 class StarView extends Component {
 
   displayStars(listOfStars) {
@@ -22,7 +24,7 @@ class StarView extends Component {
     return star.data;
   }
 
-  displayStarsFull(listOfStars) {
+  OLDdisplayStarsFull(listOfStars) {
     return (
     <ul className="collection">
       { _.map(listOfStars, (star) => {
@@ -45,7 +47,18 @@ class StarView extends Component {
       })}
       </div>
     )
+  }
 
+  displayStarsFull(listOfStars) {
+    const items = listOfStars;
+    return (
+      <Nestable
+        items={items}
+        childrenProp = "childStars"
+        renderItem={({ item })=> item.data}
+        onChange={(arg, arg2) => false}
+      />
+    )
   }
 
   displayAllStars(formattedStars) {
@@ -59,9 +72,7 @@ class StarView extends Component {
 
   render() {
     if (this.props.star && this.props.auth) {
-    console.log(this.props.star);
     const formattedStars = formatStars(this.props.auth['_id'], this.props.star);
-    console.log(formattedStars);
     return (
       <div>
         {this.displayAllStars(formattedStars)}

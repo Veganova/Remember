@@ -2,10 +2,7 @@ import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR } from '../actions/types'
 
 function removeStar(state, removedStar) {
   const newState = JSON.parse(JSON.stringify(state));
-  console.log(removedStar);
-  console.log(newState);
   const newerState = newState.filter(star => removedStar['_id'] !== star['_id']);
-  console.log(newerState);
   return newerState;
 }
 

@@ -22,6 +22,7 @@ function constructStars(byParentId, parentId) {
   parentStars.forEach((parentStar) => {
     const childStars = constructStars(byParentId, parentStar['_id']);
     const copy = JSON.parse(JSON.stringify(parentStar));
+    copy.id = copy["_id"];
     copy.childStars = childStars;
     stars.push(copy);
   });

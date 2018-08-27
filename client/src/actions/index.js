@@ -22,7 +22,6 @@ const updateStar= (id, update) => async dispatch => {
 }
 
 const removeStar = (id) => async dispatch => {
-  console.log("REMOVING STAR ACTION", id);
   const res = await axios.delete('/api/star/remove', { data: {id}});
   dispatch({ type: REMOVE_STAR, payload: res.data });
 }

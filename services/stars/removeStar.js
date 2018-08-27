@@ -6,7 +6,6 @@ const {updateStar} = require('./updateStar');
 async function removeStar(userId, starId) {
   const starToUpdate = await Star.findById(starId);
   if (starToUpdate.parentId === userId) {
-    console.log('deleting root -- send a confirmation');
   }
   const trashStar = await Star.findOne({"parentId":userId, "data": "Trash"});
   return await updateStar(userId, starId, {parentId: trashStar.id});
