@@ -7,6 +7,7 @@ import ThemeSwitcher from './ThemeSwitcher';
 import * as actions from '../../actions';
 import { formatStars } from '../../helpers';
 import Nestable from 'react-nestable';
+import axios from 'axios';
 
 class StarView extends Component {
 
@@ -53,17 +54,24 @@ class StarView extends Component {
     const items = listOfStars;
     return (
       <Nestable
+        ref={(child) => { this._child = child; }}
         items={items}
         childrenProp = "childStars"
         renderItem={({ item })=> item.data}
-        onChange={(arg, arg2) => console.log("after")}
+        onChange={(arg, arg2) => {
+          console.log("after");
+          this._child.dragRevert();
+        }}
         onMove={(arg, arg2) => {
-          const rand = Math.random();
-          console.log(rand);
-          return rand > .5;
+          console.log(this._child);
+          return true;
         }}
       />
     )
+  }
+
+  timeout(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   displayAllStars(formattedStars) {
