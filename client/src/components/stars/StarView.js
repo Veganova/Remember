@@ -56,7 +56,12 @@ class StarView extends Component {
         items={items}
         childrenProp = "childStars"
         renderItem={({ item })=> item.data}
-        onChange={(arg, arg2) => false}
+        onChange={(arg, arg2) => console.log("after")}
+        onMove={(arg, arg2) => {
+          const rand = Math.random();
+          console.log(rand);
+          return rand > .5;
+        }}
       />
     )
   }
