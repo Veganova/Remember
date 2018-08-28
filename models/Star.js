@@ -8,6 +8,7 @@ const starSchema = new Schema({
   userId: { type:String, required: true },
   parentId: { type:String, required: true},
   data: { type:String, required: true},
+  index: { type: Number, required: true }
 });
 
 mongoose.model('stars', starSchema);

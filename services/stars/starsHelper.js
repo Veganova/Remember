@@ -23,4 +23,32 @@ const Star = mongoose.model('stars');
   });
   return Promise.all(result);
 }
-module.exports = {findChildren};
+
+function getByParentId(allStars) {
+  const byParentId = {};
+  allStars.forEach((star) => {
+    if (!byParentId[star.parentId]) {
+      byParentId[star.parentId] = [];
+    }
+    if (!byParentId[star['_id']]) {
+      byParentId[star['_id']] = [];
+    }
+    byParentId[star.parentId].push(star);
+  });
+  return byParentId;
+}
+
+// recieves flat list and returns a list of ids
+function findAllIdsUnderParent(parentId, starByParentId) {
+  const total = [];
+  const childStars = starByParentId[parentId];
+  for (let i = 0; i < childStars.length; i++) {
+    let childStar = childStars[i];
+    total.push(childStar.id);
+    total.concat(findAllIdsUnderParent(childStar.id, starByParentId));
+  }
+  return total;
+}
+
+
+module.exports = { findChildren, findAllIdsUnderParent, getByParentId };

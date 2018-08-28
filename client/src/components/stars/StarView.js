@@ -11,10 +11,10 @@ import axios from 'axios';
 
 class StarView extends Component {
 
-  displayStars(listOfStars) {
+  displayStars() {
     return (
       <ul className="nav nav-tabs">
-      { _.map(listOfStars, (star) => {
+      { _.map(this.formattedStars, (star) => {
         return <li key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></li>
       })}
       </ul>
@@ -22,107 +22,129 @@ class StarView extends Component {
   }
 
   displayStar(star) {
-    return star.data;
+    return <div onClick={() => { this.props.removeStar(star.id, star.parentId) }}>{star.index + " " + star.data}</div>;
   }
 
-  OLDdisplayStarsFull(listOfStars) {
-    return (
-    <ul className="collection">
-      { _.map(listOfStars, (star) => {
-        return (
-          <li key={star["_id"]} className="collection-item">
-            <div> {this.displayStar(star)} </div> <button onClick={() => {this.props.removeStar(star["_id"])}}> X </button>
-            <div> {this.displayStarsFull(star.childStars)} </div>
-          </li>
-      )
-    })}
-    </ul>
-  )
-  }
-
-  displayChildStars(listOfStars) {
+  displayChildStars() {
     return (
       <div className="tab-content">
-      {_.map(listOfStars, (star) => {
-        return <div key={star['_id']} id={star.data} className="tab-pane fade in active">{this.displayStarsFull(star.childStars)} </div>
+      {_.map(this.formattedStars, (star) => {
+        return (
+          <div key={star['_id']} id={star.data} className="tab-pane fade in active">
+          {this.displayStarsFull(star.childStars, star.id)}
+          <button className=".btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }>Delete</button>
+           </div>
+         )
       })}
       </div>
     )
   }
 
-  displayStarsFull(listOfStars) {
-    const items = listOfStars;
+// state -> this.formattedStars.
+// good for it to be global so that add can know where to add.. (but this is temporary.. can just loop over state )
+// try updating state and have that rerender with all the correct data...
+  displayStarsFull(items, parentId) {
+    const parentIdHappy = parentId;
     return (
       <Nestable
-        ref={(child) => { this._child = child; }}
+        ref={(child) => {  }}
         items={items}
         childrenProp = "childStars"
-        renderItem={({ item })=> item.data}
-        onChange={(arg, arg2) => {
-          console.log("after");
-          this._child.dragRevert();
-        }}
-        onMove={(arg, arg2) => {
-          console.log(this._child);
-          return true;
+        renderItem={(item)=> this.displayStar(item.item)}
+        onChange={(items, updatedItem) => {
+          // recurse through arg and find arg2 - figure out who the parent is
+
+          const parentId = this.findInNestable(updatedItem, items, parentIdHappy);
+          // this.props.updateStar();
+          // let nestableIndex = -1;
+          // for (let i = 0; this.formattedStars.length; i++) {
+          //   if (this.formattedStars[i].id === parentId) {
+          //     nestableIndex = i;
+          //     break;
+          //   }
+          // }
+          // this.formattedStars[nestableIndex].childStars = arg;
+          console.log("after", items, parentId);
         }}
       />
     )
+  }
+
+  findInNestable(item, items, parentId) {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].id === item.id) {
+        return parentId;
+      }
+
+      const result = this.findInNestable(item, items[i].childStars, items[i].id);
+      if (result) {
+        return result;
+      }
+    }
   }
 
   timeout(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  displayAllStars(formattedStars) {
+  displayAllStars() {
     return (
       <div>
-          {this.displayStars(formattedStars)}
-          {this.displayChildStars(formattedStars)}
+          {this.displayStars()}
+          {this.displayChildStars()}
       </div>
     )
   }
 
   render() {
     if (this.props.star && this.props.auth) {
-    const formattedStars = formatStars(this.props.auth['_id'], this.props.star);
-    return (
-      <div>
-        {this.displayAllStars(formattedStars)}
-        <button onClick={this.addStarAction}>Add Function</button>
-      </div>
-    )
-  }
-  else {
-    return (
-      <div>Loading ...</div>
-    )
-  }
+      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+      return (
+          <div>
+            {this.displayAllStars()}
+            <button onClick={this.addStarAction}>Add Function</button>
+          </div>
+        )
+    }
+    else {
+      return (
+        <div>Loading ...</div>
+      )
+    }
   }
 
   getStarWithData(stars, data) {
-    for (let i = 0; i < stars.length; i++) {
-      if (data === stars[i]['data']) {
+    for (let i = 0; stars.length; i++) {
+      if (stars[i].data === data) {
         return stars[i];
       }
-      let childStar = this.getStarWithData(stars[i].childStars, data);
-      if (childStar) {
-        return childStar;
+    }
+  }
+
+  getLargestIndexWithParentId(stars, parentId) {
+    let largestIndex = 0;
+    for (let i = 0; i < stars.length; i++) {
+      const star = stars[i];
+      if (star.parentId === parentId && largestIndex < star.index) {
+        largestIndex = star.index;
       }
     }
-    return null;
+    return largestIndex === 0 ? 0.5 : largestIndex;
   }
 
   addStarAction() {
     var d = new Date();
+    console.log("addStaraction", this.props);
+    const notesStarId = this.getStarWithData(this.props.star, 'Stars')['_id'];
 
-    const star = this.getStarWithData(this.props.star, 'Stars');
-    this.props.addStar(star['_id'], d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds());
+    const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;
+    this.props.addStar(notesStarId, d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds(), index);
   }
 
   constructor(props) {
     super(props);
     this.addStarAction = this.addStarAction.bind(this);
+    this.displayStar = this.displayStar.bind(this);
   }
 }
 

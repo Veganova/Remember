@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FETCH_USER, GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR } from './types';
+import { FETCH_USER, GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN } from './types';
 
 const fetchUser = () => async dispatch => {
   const res = await axios.get('/api/current_user');
@@ -11,8 +11,8 @@ const getStars = () => async dispatch => {
   dispatch({ type: GET_STARS, payload: res.data });
 }
 
-const addStar = (parentId, data) => async dispatch => {
-  const res = await axios.post('/api/star/add', {parentId, data});
+const addStar = (parentId, data, index) => async dispatch => {
+  const res = await axios.post('/api/star/add', {parentId, data, index});
   dispatch({ type: ADD_STAR, payload: res.data });
 }
 
@@ -21,11 +21,19 @@ const updateStar= (id, update) => async dispatch => {
   dispatch({ type: UPDATE_STAR, payload: res.data });
 }
 
-const removeStar = (id) => async dispatch => {
-  const res = await axios.delete('/api/star/remove', { data: {id}});
+// needs id and parentId of the star being deleted
+// uses parentId to check if it resides in the Trash (which would permanentatly delete it)
+const removeStar = (id, parentId) => async dispatch => {
+  const res = await axios.delete('/api/star/remove', { data: { id, parentId }});
   dispatch({ type: REMOVE_STAR, payload: res.data });
+}
+
+// uses parentId to check if it resides in the Trash (which would permanentatly delete it)
+const removeChildren = (parentId) => async dispatch => {
+  const res = await axios.delete('/api/star/removeChildren', { data: {parentId}});
+  dispatch({ type: REMOVE_CHILDREN, payload: res.data });
 }
 
 
 
-export { fetchUser, getStars, addStar, removeStar };
+export { fetchUser, getStars, addStar, removeStar, removeChildren };

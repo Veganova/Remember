@@ -15,7 +15,7 @@ function getByParentId(allStars) {
 /**
 *   Needs there to be a mapping for every single star id (below the parentId) -> list of children stars
 **/
-function constructStars(byParentId, parentId) {
+export function constructStars(byParentId, parentId) {
   const stars = [];
   const parentStars = byParentId[parentId];
 

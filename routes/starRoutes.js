@@ -1,5 +1,6 @@
 const {addStar} = require('../services/stars/addStar');
 const {removeStar} = require('../services/stars/removeStar');
+const {removeChildren} = require('../services/stars/removeChildren');
 const {showStars, constructStars}  = require('../services/stars/showStars');
 const {updateStar}  = require('../services/stars/updateStar');
 
@@ -18,13 +19,14 @@ module.exports = (app) => {
     const userId = req.user.id;
     const parentId = body.parentId || userId;
     const data = body.data;
-    const newStar = await addStar(userId, parentId, data);
+    const index = body.index;
+    const newStar = await addStar(userId, parentId, data, index);
 
-    const arg = {};
-    arg[newStar.parentId] = [newStar];
-    arg[newStar.id] = [];
-    const formattedStar = constructStars(arg, newStar.parentId);
-    res.send(formattedStar);
+    // const arg = {};
+    // arg[newStar.parentId] = [newStar];
+    // arg[newStar.id] = [];
+    // const formattedStar = constructStars(arg, newStar.parentId);
+    res.send(newStar);
   });
 
   // Takes in a userId, starId, and an updateJson as needed by the mongoose.update(..) call
@@ -42,10 +44,20 @@ module.exports = (app) => {
     const stuff = await showStars(userId);
     res.send(stuff);
   });
+
   app.delete('/api/star/remove', async (req, res) => {
     const userId = req.user.id;
     const starId = req.body.id;
-    const stuff = await removeStar(userId, starId);
+    const parentId = req.body.parentId;
+    const stuff = await removeStar(userId, starId, parentId);
+    res.send(stuff);
+  });
+
+  app.delete('/api/star/removeChildren', async (req, res) => {
+    const userId = req.user.id;
+    const parentId = req.body.parentId;
+
+    const stuff = await removeChildren(userId, parentId);
     res.send(stuff);
   });
 }
