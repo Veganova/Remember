@@ -46,7 +46,7 @@ class StarView extends Component {
         const result =  (
           <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
           {this.displayStarsFull(star.childStars, star.id)}
-          <button className=".btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }>Delete</button>
+          <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
            </div>
          )
          first = false;
@@ -119,7 +119,7 @@ class StarView extends Component {
       return (
           <div>
             {this.displayAllStars()}
-            <button onClick={this.addStarAction}>Add Function</button>
+            <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
 
           </div>
         )
