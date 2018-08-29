@@ -22,19 +22,35 @@ class StarView extends Component {
   }
 
   displayStar(star) {
-    return <div onClick={() => { this.props.removeStar(star.id, star.parentId) }}>{star.index + " " + star.data}</div>;
+    return (
+      <div className="container-fluid">
+        <div className="row">
+          <div className="col-10">
+          <input className="form-control" type="text" value={star.index + " " + star.data} />
+          </div>
+          <div className="col-2">
+          <button onClick={() => { this.props.removeStar(star.id, star.parentId)}} type="button" class="btn btn-default btn-sm">
+            <i className="fa fa-times" aria-hidden="true"></i> Remove
+          </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   displayChildStars() {
+    let first = true;
     return (
       <div className="tab-content">
       {_.map(this.formattedStars, (star) => {
-        return (
-          <div key={star['_id']} id={star.data} className="tab-pane fade in active">
+        const result =  (
+          <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
           {this.displayStarsFull(star.childStars, star.id)}
           <button className=".btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }>Delete</button>
            </div>
          )
+         first = false;
+         return result;
       })}
       </div>
     )
@@ -96,6 +112,7 @@ class StarView extends Component {
     )
   }
 
+
   render() {
     if (this.props.star && this.props.auth) {
       this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
@@ -103,6 +120,7 @@ class StarView extends Component {
           <div>
             {this.displayAllStars()}
             <button onClick={this.addStarAction}>Add Function</button>
+
           </div>
         )
     }
