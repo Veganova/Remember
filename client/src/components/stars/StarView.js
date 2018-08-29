@@ -23,18 +23,16 @@ class StarView extends Component {
 
   displayStar(star) {
     return (
-      <div className="container-fluid">
         <div className="row">
-          <div className="col-10">
-          <input className="form-control" type="text" value={star.index + " " + star.data} />
-          </div>
-          <div className="col-2">
-          <button onClick={() => { this.props.removeStar(star.id, star.parentId)}} type="button" class="btn btn-default btn-sm">
-            <i className="fa fa-times" aria-hidden="true"></i> Remove
-          </button>
-          </div>
+              <div className="input-group col-12">
+                <input className="form-control" type="text" value={"Index: " + star.index + ", Data " + star.data} />
+                  <div className="input-group-append">
+                    <button className="btn btn-outline-secondary" onClick={() => { this.props.removeStar(star.id, star.parentId)}} type="button">
+                      <i className="fa fa-times" aria-hidden="true"></i> Remove
+                    </button>
+                  </div>
+                </div>
         </div>
-      </div>
     )
   }
 
@@ -45,10 +43,26 @@ class StarView extends Component {
       {_.map(this.formattedStars, (star) => {
         const result =  (
           <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
-          {this.displayStarsFull(star.childStars, star.id)}
-          <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
+            {this.displayStarsFull(star.childStars, star.id)}
+            <hr class="col-xs-12" />
+            <div className="row mt-5">
+              <div className="input-group col-12">
+                <input className="form-control" placeholder="New Note" type="text"/>
+                  <div className="input-group-append">
+                    <button className="btn btn-outline-secondary" onSubmit={()=>console.log("hello")} type="submit">
+                      <i className="fa fa-plus" aria-hidden="true"></i> Add
+                    </button>
+                  </div>
+                </div>
+
+            </div>
+              <div>
+                <div className="mt-2 float-right">
+                  <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
+                </div>
+            </div>
            </div>
-         )
+                  )
          first = false;
          return result;
       })}
