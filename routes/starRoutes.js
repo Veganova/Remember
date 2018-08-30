@@ -48,8 +48,7 @@ module.exports = (app) => {
   app.delete('/api/star/remove', async (req, res) => {
     const userId = req.user.id;
     const starId = req.body.id;
-    const parentId = req.body.parentId;
-    const stuff = await removeStar(userId, starId, parentId);
+    const stuff = await removeStar(userId, starId);
     res.send(stuff);
   });
 

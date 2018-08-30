@@ -5,7 +5,6 @@ import { constructStars } from '../helpers.js';
 
 // Function handles moving stars to trash and permentantly deletion
 function removeStar(newState, removedStar) {
-  console.log("REMOVE_STAR:", removedStar);
   if (removedStar.trashed) {
     let trashedId;
     for (let i = 0; i < newState.length; i++) {
@@ -14,7 +13,7 @@ function removeStar(newState, removedStar) {
       }
     }
     if (!trashedId) {
-      console.log("No trash section");
+      alert("No trash section");
     }
     for (let i = 0; i < removedStar.trashed.length; i++) {
       for (let k = 0; k < newState.length; k++) {
@@ -42,12 +41,8 @@ function deleteStar(newState, removedStar) {
 }
 
 function updateStar(state, updatedStar) {
-    console.log("1", state);
    const newState = deleteStar(state, updatedStar)
-   console.log("2", state);
-   newState.push(updatedStar);
-   // addStar(state, updatedStar);
-   return newState;
+   return addStar(newState, updatedStar);
 }
 
 function addStar(newState, formattedStar) {
@@ -68,7 +63,6 @@ function addStar(newState, formattedStar) {
 // recieved stars (action.payload) wll have a correct index.
 export default function(state = null, action) {
   const newState = JSON.parse(JSON.stringify(state));
-  console.log(action);
   if (action.payload && action.payload.error) {
     return newState;
   }

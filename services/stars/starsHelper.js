@@ -24,6 +24,14 @@ const Star = mongoose.model('stars');
   return Promise.all(result);
 }
 
+function getById(allStars) {
+  const byId= {};
+  allStars.forEach((star) => {
+    byId[star.id] = star;
+  });
+  return byId;
+}
+
 function getByParentId(allStars) {
   const byParentId = {};
   allStars.forEach((star) => {
@@ -51,4 +59,4 @@ function findAllIdsUnderParent(parentId, starByParentId) {
 }
 
 
-module.exports = { findChildren, findAllIdsUnderParent, getByParentId };
+module.exports = { findChildren, findAllIdsUnderParent, getById, getByParentId };

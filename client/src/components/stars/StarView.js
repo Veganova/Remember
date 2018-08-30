@@ -10,7 +10,6 @@ import Nestable from 'react-nestable';
 import axios from 'axios';
 
 class StarView extends Component {
-
   displayStars() {
     return (
       <ul className="nav nav-tabs">
@@ -25,9 +24,9 @@ class StarView extends Component {
     return (
         <div className="row">
               <div className="input-group col-12">
-                <input className="form-control" type="text" value={"Index: " + star.index + ", Data " + star.data} />
+                <input className="form-control" readOnly type="text" value={"Index: " + star.index + ", Data " + star.data} />
                   <div className="input-group-append">
-                    <button className="btn btn-outline-secondary" onClick={() => { this.props.removeStar(star.id, star.parentId)}} type="button">
+                    <button className="btn btn-outline-secondary" onClick={() => { this.props.removeStar(star.id) }} type="button">
                       <i className="fa fa-times" aria-hidden="true"></i> Remove
                     </button>
                   </div>
@@ -54,7 +53,7 @@ class StarView extends Component {
       {_.map(this.formattedStars, (star) => {
         const result =  (
           <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
-            {this.displayStarsFull(star.childStars, star.id)}
+            {this.displayStarsFull(star.childStars, star)}
             <hr className="col-xs-12" />
               <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
                 <div className="row mt-5">
@@ -85,8 +84,8 @@ class StarView extends Component {
 // state -> this.formattedStars.
 // good for it to be global so that add can know where to add.. (but this is temporary.. can just loop over state )
 // try updating state and have that rerender with all the correct data...
-  displayStarsFull(items, parentId) {
-    const parentIdHappy = parentId;
+  displayStarsFull(items, parentStar) {
+    const parentIdHappy = parentStar.id;
     return (
       <Nestable
         ref={(child) => {  }}
@@ -94,31 +93,47 @@ class StarView extends Component {
         childrenProp = "childStars"
         renderItem={(item)=> this.displayStar(item.item)}
         onChange={(items, updatedItem) => {
-          // recurse through arg and find arg2 - figure out who the parent is
+          //passing in undefined to identify when the item is on the base (outermost) level
+          let newParentOfMovedStar = this.findInNestable(updatedItem, items, undefined);
+          let lowerNeighbor = 0;
+          let upperNeighbor = 1;
 
-          const parentId = this.findInNestable(updatedItem, items, parentIdHappy);
-          // this.props.updateStar();
-          // let nestableIndex = -1;
-          // for (let i = 0; this.formattedStars.length; i++) {
-          //   if (this.formattedStars[i].id === parentId) {
-          //     nestableIndex = i;
-          //     break;
-          //   }
-          // }
-          // this.formattedStars[nestableIndex].childStars = arg;
-          console.log("after", items, parentId);
+          if (!newParentOfMovedStar) {
+            newParentOfMovedStar = {
+              childStars: items,
+              id: parentIdHappy
+            };
+          }
+          let siblingStars = newParentOfMovedStar.childStars;
+
+          for (let i = 0; i < siblingStars.length; i++) {
+            if (siblingStars[i].id === updatedItem.id) {
+              if (i < siblingStars.length - 1) {
+                upperNeighbor = siblingStars[i+1].index;
+              }
+              break;
+            }
+            lowerNeighbor = siblingStars[i].index;
+          }
+
+          const newIndex = (lowerNeighbor + upperNeighbor) / 2;
+          const update = {
+            "parentId": newParentOfMovedStar.id,
+            "index": newIndex
+          }
+          this.props.updateStar(updatedItem.id, update);
         }}
       />
     )
   }
 
-  findInNestable(item, items, parentId) {
+  findInNestable(item, items, parent) {
     for (let i = 0; i < items.length; i++) {
       if (items[i].id === item.id) {
-        return parentId;
+        return parent;
       }
 
-      const result = this.findInNestable(item, items[i].childStars, items[i].id);
+      const result = this.findInNestable(item, items[i].childStars, items[i]);
       if (result) {
         return result;
       }
@@ -173,12 +188,11 @@ class StarView extends Component {
         largestIndex = star.index;
       }
     }
-    return largestIndex === 0 ? 0.5 : largestIndex;
+    return largestIndex;
   }
 
   addStarAction() {
     var d = new Date();
-    console.log("addStaraction", this.props);
     const notesStarId = this.getStarWithData(this.props.star, 'Stars')['_id'];
 
     const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;

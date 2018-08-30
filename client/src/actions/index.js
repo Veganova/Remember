@@ -16,15 +16,13 @@ const addStar = (parentId, data, index) => async dispatch => {
   dispatch({ type: ADD_STAR, payload: res.data });
 }
 
-const updateStar= (id, update) => async dispatch => {
+const updateStar = (id, update) => async dispatch => {
   const res = await axios.put('/api/star/update', {id, update});
   dispatch({ type: UPDATE_STAR, payload: res.data });
 }
 
-// needs id and parentId of the star being deleted
-// uses parentId to check if it resides in the Trash (which would permanentatly delete it)
-const removeStar = (id, parentId) => async dispatch => {
-  const res = await axios.delete('/api/star/remove', { data: { id, parentId }});
+const removeStar = (id) => async dispatch => {
+  const res = await axios.delete('/api/star/remove', { data: { id }});
   dispatch({ type: REMOVE_STAR, payload: res.data });
 }
 
@@ -36,4 +34,4 @@ const removeChildren = (parentId) => async dispatch => {
 
 
 
-export { fetchUser, getStars, addStar, removeStar, removeChildren };
+export { fetchUser, getStars, addStar, updateStar, removeStar, removeChildren };
