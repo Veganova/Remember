@@ -36,6 +36,17 @@ class StarView extends Component {
     )
   }
 
+  handleNewNoteChange(event) {
+    this.setState({newNoteValue: event.target.value});
+  }
+
+  handleNewNoteSubmit(event, star) {
+    event.preventDefault();
+    const newIndex = (this.getLargestIndexWithParentId(this.props.star, star.id) + 1) / 2;
+    this.props.addStar(star.id, this.state.newNoteValue, newIndex);
+    this.setState({newNoteValue: ""});
+  }
+
   displayChildStars() {
     let first = true;
     return (
@@ -44,18 +55,19 @@ class StarView extends Component {
         const result =  (
           <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
             {this.displayStarsFull(star.childStars, star.id)}
-            <hr class="col-xs-12" />
-            <div className="row mt-5">
-              <div className="input-group col-12">
-                <input className="form-control" placeholder="New Note" type="text"/>
-                  <div className="input-group-append">
-                    <button className="btn btn-outline-secondary" onSubmit={()=>console.log("hello")} type="submit">
-                      <i className="fa fa-plus" aria-hidden="true"></i> Add
-                    </button>
-                  </div>
+            <hr className="col-xs-12" />
+              <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
+                <div className="row mt-5">
+                  <div className="input-group col-12">
+                    <input className="form-control" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
+                    <div className="input-group-append">
+                      <button className="btn btn-outline-secondary" type="submit">
+                        <i className="fa fa-plus" aria-hidden="true"></i> Add
+                      </button>
+                    </div>
                 </div>
-
             </div>
+              </form>
               <div>
                 <div className="mt-2 float-right">
                   <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
@@ -175,8 +187,12 @@ class StarView extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {newNoteValue: ''};
+
     this.addStarAction = this.addStarAction.bind(this);
     this.displayStar = this.displayStar.bind(this);
+    this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
+    this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
   }
 }
 
