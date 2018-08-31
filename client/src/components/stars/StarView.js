@@ -2,12 +2,10 @@ import _ from 'lodash';
 import $ from 'jquery';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
-import ThemeSwitcher from './ThemeSwitcher';
 import * as actions from '../../actions';
 import { formatStars } from '../../helpers';
 import Nestable from 'react-nestable';
-import axios from 'axios';
+import SingleStarView from "./SingleStarView";
 
 class StarView extends Component {
   displayStars() {
@@ -21,18 +19,7 @@ class StarView extends Component {
   }
 
   displayStar(star) {
-    return (
-        <div className="row">
-              <div className="input-group col-12">
-                <input className="form-control" readOnly type="text" value={"Index: " + star.index + ", Data " + star.data} />
-                  <div className="input-group-append">
-                    <button className="btn btn-outline-secondary" onClick={() => { this.props.removeStar(star.id) }} type="button">
-                      <i className="fa fa-times" aria-hidden="true"></i> Remove
-                    </button>
-                  </div>
-                </div>
-        </div>
-    )
+    return <SingleStarView star={star} updateStar={this.props.updateStar} />;
   }
 
   handleNewNoteChange(event) {
