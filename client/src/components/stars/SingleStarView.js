@@ -2,14 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 
-class StarView extends Component {
+class SingleStarView extends Component {
 
     constructor(props) {
         super(props);
 
+        console.log("Constructor", props.star.index, props.star.data);
+
         this.state = {
-            noteData: this.props.star.data
+            noteData: props.star.data
         };
+
 
         this.handleNoteEditSubmit = this.handleNoteEditSubmit.bind(this);
         this.handleNoteEditChange = this.handleNoteEditChange.bind(this);
@@ -17,14 +20,19 @@ class StarView extends Component {
 
     handleNoteEditSubmit(event, star) {
         event.preventDefault();
-        // this.props.updateStar(star.id, {"data": this.state.noteData});
+        this.props.updateStar(star.id, {"data": this.state.noteData});
     }
 
     handleNoteEditChange(event) {
+        // console.log("CHANGING!");
         this.setState({noteData: event.target.value});
     }
 
+    render2() {
+        return <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={this.state.noteData} />;
+    }
     render() {
+        // console.log("Render", this.props.star.index, this.props.star.data);
         const star = this.props.star;
         return (
             <form onSubmit={(e)=> this.handleNoteEditSubmit(e, star)}>
@@ -45,5 +53,9 @@ class StarView extends Component {
         );
     }
 }
+//
+// export default ({star}) => {
+//     return star.data;
+// }
 
-export default connect(null, actions)(StarView);
+export default connect(null, actions)(SingleStarView);

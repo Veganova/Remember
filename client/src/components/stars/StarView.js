@@ -19,7 +19,8 @@ class StarView extends Component {
   }
 
   displayStar(star) {
-    return <SingleStarView star={star} updateStar={this.props.updateStar} />;
+    // console.log("DISPLAY", star.data)
+    return <SingleStarView star={star}/>;
   }
 
   handleNewNoteChange(event) {
