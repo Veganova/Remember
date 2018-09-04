@@ -1,4 +1,4 @@
-import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN } from '../actions/types'
+import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR } from '../actions/types'
 import { constructStars } from '../helpers.js';
 
 
@@ -83,6 +83,16 @@ export default function(state = null, action) {
       return removeStar(newState, action.payload);
     case REMOVE_CHILDREN:
       return removeStar(newState, action.payload);
+    case UPDATE_LOCAL_STAR:
+      for (let i = 0; i < newState.length; i++) {
+        if (newState[i]['_id'] === action.payload.id) {
+          newState[i].data = action.payload.data;
+          return newState;
+        }
+      }
+      alert("Update local star failed to find a star with id " + action.payload.id);
+      // error message
+      return state;
     default:
       return state;
   }

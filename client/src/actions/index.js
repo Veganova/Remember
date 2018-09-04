@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { FETCH_USER, GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN } from './types';
+import { FETCH_USER, GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR } from './types';
 
 const fetchUser = () => async dispatch => {
   const res = await axios.get('/api/current_user');
@@ -32,6 +32,10 @@ const removeChildren = (parentId) => async dispatch => {
   dispatch({ type: REMOVE_CHILDREN, payload: res.data });
 }
 
+const updateLocalStar = (id, data) => dispatch => {
+  dispatch({ type: UPDATE_LOCAL_STAR, payload: { id, data }});
+}
 
 
-export { fetchUser, getStars, addStar, updateStar, removeStar, removeChildren };
+
+export { fetchUser, getStars, addStar, updateStar, removeStar, removeChildren, updateLocalStar };

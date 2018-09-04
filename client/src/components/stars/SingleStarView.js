@@ -7,32 +7,21 @@ class SingleStarView extends Component {
     constructor(props) {
         super(props);
 
-        console.log("Constructor", props.star.index, props.star.data);
-
-        this.state = {
-            noteData: props.star.data
-        };
-
-
         this.handleNoteEditSubmit = this.handleNoteEditSubmit.bind(this);
         this.handleNoteEditChange = this.handleNoteEditChange.bind(this);
     }
 
     handleNoteEditSubmit(event, star) {
         event.preventDefault();
-        this.props.updateStar(star.id, {"data": this.state.noteData});
+        this.props.updateStar(star.id, {"data": star.data});
     }
+
 
     handleNoteEditChange(event) {
-        // console.log("CHANGING!");
-        this.setState({noteData: event.target.value});
+        this.props.updateLocalStar(this.props.star.id, event.target.value)
     }
 
-    render2() {
-        return <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={this.state.noteData} />;
-    }
     render() {
-        // console.log("Render", this.props.star.index, this.props.star.data);
         const star = this.props.star;
         return (
             <form onSubmit={(e)=> this.handleNoteEditSubmit(e, star)}>
@@ -41,7 +30,7 @@ class SingleStarView extends Component {
                         <div className="input-group-prepend">
                             <span className="input-group-text">{star.index}</span>
                         </div>
-                        <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={this.state.noteData} />
+                        <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={star.data} />
                         <div className="input-group-append">
                             <button className="btn btn-outline-secondary" onClick={() => this.props.removeStar(star.id)} type="button">
                                 <i className="fa fa-times" aria-hidden="true"/> Remove

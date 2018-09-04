@@ -8,20 +8,32 @@ import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
 
 class StarView extends Component {
-  displayStars() {
-    return (
-      <ul className="nav nav-tabs">
-      { _.map(this.formattedStars, (star) => {
-        return <li key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></li>
-      })}
-      </ul>
-    )
+
+  constructor(props) {
+      super(props);
+      this.state = {newNoteValue: ''};
+
+      this.addStarAction = this.addStarAction.bind(this);
+      this.displayStar = this.displayStar.bind(this);
+      this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
+      this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
   }
 
+
   displayStar(star) {
-    // console.log("DISPLAY", star.data)
-    return <SingleStarView star={star}/>;
+      return <SingleStarView star={star}/>;
   }
+
+
+    displayStars() {
+        return (
+            <ul className="nav nav-tabs">
+                { _.map(this.formattedStars, (star) => {
+                    return <li key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></li>
+                })}
+            </ul>
+        )
+    }
 
   handleNewNoteChange(event) {
     this.setState({newNoteValue: event.target.value});
@@ -81,7 +93,7 @@ class StarView extends Component {
         childrenProp = "childStars"
         renderItem={(item)=> this.displayStar(item.item)}
         onChange={(items, updatedItem) => {
-          //passing in undefined to identify when the item is on the base (outermost) level
+            //passing in undefined to identify when the item is on the base (outermost) level
           let newParentOfMovedStar = this.findInNestable(updatedItem, items, undefined);
           let lowerNeighbor = 0;
           let upperNeighbor = 1;
@@ -106,8 +118,9 @@ class StarView extends Component {
 
           const newIndex = (lowerNeighbor + upperNeighbor) / 2;
           const update = {
-            "parentId": newParentOfMovedStar.id,
-            "index": newIndex
+              "parentId": newParentOfMovedStar.id,
+              "index": newIndex,
+              "data" : updatedItem.data
           }
           this.props.updateStar(updatedItem.id, update);
         }}
@@ -144,7 +157,7 @@ class StarView extends Component {
 
   render() {
     if (this.props.star && this.props.auth) {
-      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+        this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
       return (
           <div>
             {this.displayAllStars()}
@@ -185,16 +198,6 @@ class StarView extends Component {
 
     const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;
     this.props.addStar(notesStarId, d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds(), index);
-  }
-
-  constructor(props) {
-    super(props);
-    this.state = {newNoteValue: ''};
-
-    this.addStarAction = this.addStarAction.bind(this);
-    this.displayStar = this.displayStar.bind(this);
-    this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
-    this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
   }
 }
 
