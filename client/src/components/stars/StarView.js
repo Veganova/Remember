@@ -11,17 +11,18 @@ class StarView extends Component {
 
   constructor(props) {
       super(props);
-      this.state = {newNoteValue: ''};
+      this.state = {newNoteValue: '', syncStatus: 0};
 
       this.addStarAction = this.addStarAction.bind(this);
       this.displayStar = this.displayStar.bind(this);
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
+      this.setSyncStatus = this.setSyncStatus.bind(this)
   }
 
 
   displayStar(star) {
-      return <SingleStarView star={star}/>;
+      return <SingleStarView star={star} setSyncStatus={this.setSyncStatus}/>;
   }
 
 
@@ -36,14 +37,17 @@ class StarView extends Component {
     }
 
   handleNewNoteChange(event) {
+    this.setSyncStatus(1);
     this.setState({newNoteValue: event.target.value});
   }
 
   handleNewNoteSubmit(event, star) {
+    this.setSyncStatus(2);
     event.preventDefault();
     const newIndex = (this.getLargestIndexWithParentId(this.props.star, star.id) + 1) / 2;
     this.props.addStar(star.id, this.state.newNoteValue, newIndex);
     this.setState({newNoteValue: ""});
+    this.setSyncStatus(0);
   }
 
   displayChildStars() {
@@ -73,7 +77,7 @@ class StarView extends Component {
                 </div>
             </div>
            </div>
-                  )
+        );
          first = false;
          return result;
       })}
@@ -93,6 +97,7 @@ class StarView extends Component {
         childrenProp = "childStars"
         renderItem={(item)=> this.displayStar(item.item)}
         onChange={(items, updatedItem) => {
+          this.setSyncStatus(2);
             //passing in undefined to identify when the item is on the base (outermost) level
           let newParentOfMovedStar = this.findInNestable(updatedItem, items, undefined);
           let lowerNeighbor = 0;
@@ -121,8 +126,9 @@ class StarView extends Component {
               "parentId": newParentOfMovedStar.id,
               "index": newIndex,
               "data" : updatedItem.data
-          }
+          };
           this.props.updateStar(updatedItem.id, update);
+          this.setSyncStatus(0);
         }}
       />
     )
@@ -154,6 +160,33 @@ class StarView extends Component {
     )
   }
 
+  displaySyncStatus() {
+    switch (this.state.syncStatus) {
+      case 0:
+        return (
+          <div>
+            <span className="badge badge-pill badge-success">Synced</span>
+          </div>
+          );
+      case 1:
+        return (
+          <div>
+           <span className="badge badge-pill badge-danger">Changes Made</span>
+          </div>
+        );
+      case 2:
+        return (
+          <div>
+            <span className="badge badge-pill badge-warning">Saving...</span>
+          </div>
+        );
+      default:
+    }
+  }
+
+  setSyncStatus(syncStatus) {
+    this.setState({ syncStatus })
+  }
 
   render() {
     if (this.props.star && this.props.auth) {
@@ -162,7 +195,7 @@ class StarView extends Component {
           <div>
             {this.displayAllStars()}
             <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
-
+            {this.displaySyncStatus()}
           </div>
         )
     }
@@ -193,11 +226,13 @@ class StarView extends Component {
   }
 
   addStarAction() {
+    this.setSyncStatus(2);
     var d = new Date();
     const notesStarId = this.getStarWithData(this.props.star, 'Stars')['_id'];
 
     const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;
     this.props.addStar(notesStarId, d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds(), index);
+    this.setSyncStatus(0);
   }
 }
 

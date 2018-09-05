@@ -12,12 +12,15 @@ class SingleStarView extends Component {
     }
 
     handleNoteEditSubmit(event, star) {
+        this.props.setSyncStatus(2);
         event.preventDefault();
         this.props.updateStar(star.id, {"data": star.data});
+        this.props.setSyncStatus(0);
     }
 
 
     handleNoteEditChange(event) {
+        this.props.setSyncStatus(1);
         this.props.updateLocalStar(this.props.star.id, event.target.value)
     }
 
