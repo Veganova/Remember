@@ -5,17 +5,20 @@ import * as actions from '../../actions';
 import { formatStars } from '../../helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
+import Fuse from 'fuse.js';
 
 class StarView extends Component {
 
   constructor(props) {
       super(props);
-      this.state = {newNoteValue: ''};
+      this.state = {newNoteValue: '', searchTerm: ''};
 
       this.addStarAction = this.addStarAction.bind(this);
       this.displayStar = this.displayStar.bind(this);
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
+      this.onSearchBarChange = this.onSearchBarChange.bind(this);
+      this.onSearchBarSubmit = this.onSearchBarSubmit.bind(this);
   }
 
 
@@ -140,10 +143,6 @@ class StarView extends Component {
     }
   }
 
-  timeout(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
   displayAllStars() {
     return (
       <div>
@@ -151,25 +150,6 @@ class StarView extends Component {
           {this.displayChildStars()}
       </div>
     )
-  }
-
-  render() {
-    console.log("SYNC" , this.props.sync);
-    if (this.props.star && this.props.auth) {
-      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
-      return (
-          <div>
-            {this.displayAllStars()}
-            <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
-            {this.displaySyncStatus()}
-          </div>
-        )
-    }
-    else {
-      return (
-        <div>Loading ...</div>
-      )
-    }
   }
 
   getStarWithData(stars, data) {
@@ -212,6 +192,61 @@ class StarView extends Component {
           <span className="badge badge-pill badge-danger">Changes Made</span>
         </div>
       );
+    }
+  }
+
+  onSearchBarChange(e) {
+    this.setState({ searchTerm: e.target.value })
+  }
+
+  onSearchBarSubmit(e) {
+    // this.setState({ searchTerm: e.target.value })
+    e.preventDefault();
+    this.search(this.props.star, this.state.searchTerm);
+  }
+
+  addSearchBar() {
+    return (
+      <form onSubmit={this.onSearchBarSubmit}>
+        <input className="form-control" value={this.state.searchTerm} onChange={(e)=>{this.onSearchBarChange(e)}} />
+      </form>
+    )
+  }
+
+  // given unformatted stars
+  search(stars, search) {
+    var options = {
+      keys: [{
+        name: 'data'
+      }],
+      threshold: 0.3
+    };
+    const fuse = new Fuse(stars, options);
+
+    const result = fuse.search(search);
+    console.log("search", search);
+    console.log({stars});
+    console.log({result});
+  }
+
+  render() {
+    if (this.props.star && this.props.auth) {
+      // this.search(this.props.star);
+      console.log("Formating");
+      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+      return (
+        <div>
+          {this.displayAllStars()}
+          <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
+          {this.displaySyncStatus()}
+          {this.addSearchBar()}
+        </div>
+      )
+    }
+    else {
+      return (
+        <div>Loading ...</div>
+      )
     }
   }
 }
