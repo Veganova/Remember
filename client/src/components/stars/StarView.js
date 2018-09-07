@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
-import { formatStars } from '../../helpers';
+import {formatStars, searchAndFormatStars} from '../../helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
 import Fuse from 'fuse.js';
@@ -83,10 +83,8 @@ class StarView extends Component {
     )
   }
 
-// state -> this.formattedStars.
-// good for it to be global so that add can know where to add.. (but this is temporary.. can just loop over state )
-// try updating state and have that rerender with all the correct data...
   displayStarsFull(items, parentStar) {
+    console.log("Before nestable", {items}, {parentStar});
     const parentIdHappy = parentStar.id;
     return (
       <Nestable
@@ -213,27 +211,13 @@ class StarView extends Component {
     )
   }
 
-  // given unformatted stars
-  search(stars, search) {
-    var options = {
-      keys: [{
-        name: 'data'
-      }],
-      threshold: 0.3
-    };
-    const fuse = new Fuse(stars, options);
-
-    const result = fuse.search(search);
-    console.log("search", search);
-    console.log({stars});
-    console.log({result});
-  }
-
   render() {
     if (this.props.star && this.props.auth) {
       // this.search(this.props.star);
-      console.log("Formating");
-      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+      // console.log("Formating");
+      // console.log(formatStars(this.props.auth["_id"], this.props.star));
+      // this.formattedStars = formatStars(this.props.auth["_id"], this.props.star)
+      this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
       return (
         <div>
           {this.displayAllStars()}
