@@ -161,7 +161,7 @@ class StarView extends Component {
           <div>
             {this.displayAllStars()}
             <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
-
+            {this.displaySyncStatus()}
           </div>
         )
     }
@@ -197,6 +197,22 @@ class StarView extends Component {
 
     const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;
     this.props.addStar(notesStarId, d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds(), index);
+  }
+
+  displaySyncStatus() {
+    if (_.isEmpty(this.props.sync)) {
+      return (
+        <div>
+          <span className="badge badge-pill badge-success">Synced</span>
+        </div>
+      );
+    } else {
+      return (
+        <div>
+          <span className="badge badge-pill badge-danger">Changes Made</span>
+        </div>
+      );
+    }
   }
 }
 
