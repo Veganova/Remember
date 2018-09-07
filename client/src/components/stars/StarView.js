@@ -154,6 +154,7 @@ class StarView extends Component {
   }
 
   render() {
+    console.log("SYNC" , this.props.sync);
     if (this.props.star && this.props.auth) {
       this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
       return (
@@ -199,8 +200,8 @@ class StarView extends Component {
   }
 }
 
-function mapStateToProps({ auth, star }) {
-  return { auth, star };
+function mapStateToProps({ auth, star, sync }) {
+  return { auth, star, sync };
 }
 
 export default connect(mapStateToProps, actions)(StarView);

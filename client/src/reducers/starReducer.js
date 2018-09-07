@@ -85,7 +85,7 @@ export default function(state = null, action) {
       return removeStar(newState, action.payload);
     case UPDATE_LOCAL_STAR:
       for (let i = 0; i < newState.length; i++) {
-        if (newState[i]['_id'] === action.payload.id) {
+        if (newState[i]['_id'] === action.payload.star.id) {
           newState[i].data = action.payload.data;
           return newState;
         }

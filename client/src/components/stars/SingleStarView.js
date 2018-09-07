@@ -18,7 +18,7 @@ class SingleStarView extends Component {
 
 
     handleNoteEditChange(event) {
-        this.props.updateLocalStar(this.props.star.id, event.target.value)
+        this.props.updateLocalStar(this.props.star, event.target.value)
     }
 
     render() {

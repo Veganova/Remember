@@ -32,8 +32,8 @@ const removeChildren = (parentId) => async dispatch => {
   dispatch({ type: REMOVE_CHILDREN, payload: res.data });
 };
 
-const updateLocalStar = (id, data) => dispatch => {
-  dispatch({ type: UPDATE_LOCAL_STAR, payload: { id, data }});
+const updateLocalStar = (star, data) => dispatch => {
+  dispatch({ type: UPDATE_LOCAL_STAR, payload: { star, data }});
 };
 
 
