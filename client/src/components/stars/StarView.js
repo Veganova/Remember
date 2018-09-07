@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import $ from 'jquery';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
@@ -154,10 +153,9 @@ class StarView extends Component {
     )
   }
 
-
   render() {
     if (this.props.star && this.props.auth) {
-        this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
+      this.formattedStars = formatStars(this.props.auth['_id'], this.props.star);
       return (
           <div>
             {this.displayAllStars()}
