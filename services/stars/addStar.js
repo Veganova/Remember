@@ -6,7 +6,7 @@ module.exports = {
   // Index is a decimal between 0 - 1 to giver ordering.
   "addStar": async (userId, parentId, data, index, addDisabled) => {
     addDisabled = Boolean(addDisabled);
-    const existingParent = await Star.findOne({userId, id: parentId, data});
+    const existingParent = await Star.findOne({userId, "_id": parentId});
 
     if (!existingParent) {
       return { "error": "Parent doesn't exist"}
@@ -16,6 +16,7 @@ module.exports = {
     }
 
     const newStar = await new Star({userId, parentId, data, index, addDisabled}).save();
+    console.log(newStar);
     return newStar;
   }
 };

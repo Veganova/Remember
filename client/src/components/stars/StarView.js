@@ -12,7 +12,7 @@ class StarView extends Component {
 
   constructor(props) {
       super(props);
-      this.state = {newNoteValue: '', searchTerm: ''};
+      this.state = {newNoteValue: '', searchTerm: '', tabIndex: 0, lastTabIndex: 0};
 
       this.addStarAction = this.addStarAction.bind(this);
       this.displayStar = this.displayStar.bind(this);
@@ -50,7 +50,6 @@ class StarView extends Component {
   }
 
   displayChildStars() {
-    let first = true;
     return (
         <div>
       {_.map(this.formattedStars, (star) => {
@@ -89,7 +88,6 @@ class StarView extends Component {
   }
 
   displayStarsFull(items, parentStar) {
-    console.log("Before nestable", {items}, {parentStar});
     const parentIdHappy = parentStar.id;
     return (
       <Nestable
@@ -147,9 +145,10 @@ class StarView extends Component {
   }
 
   displayAllStars() {
+    let index = this.state.tabIndex;
     return (
-      <div>
-        <Tabs>
+      <div className="">
+        <Tabs selectedIndex={index} onSelect={tabIndex => this.setState({ tabIndex, lastTabIndex: tabIndex })}>
           {this.displayStars()}
           {this.displayChildStars()}
         </Tabs>
@@ -187,13 +186,13 @@ class StarView extends Component {
   displaySyncStatus() {
     if (_.isEmpty(this.props.sync)) {
       return (
-        <div>
+        <div className="">
           <span className="badge badge-pill badge-success">Synced</span>
         </div>
       );
     } else {
       return (
-        <div>
+        <div className="">
           <span className="badge badge-pill badge-danger">Changes Made</span>
         </div>
       );
@@ -201,7 +200,12 @@ class StarView extends Component {
   }
 
   onSearchBarChange(e) {
-    this.setState({ searchTerm: e.target.value })
+    let searchTerm = e.target.value;
+    if (!searchTerm) {
+      this.setState({searchTerm, tabIndex: this.state.lastTabIndex})
+    } else {
+      this.setState({ searchTerm, tabIndex: this.formattedStars.length - 1 })
+    }
   }
 
   onSearchBarSubmit(e) {
@@ -212,9 +216,18 @@ class StarView extends Component {
 
   addSearchBar() {
     return (
-      <form onSubmit={this.onSearchBarSubmit}>
-        <input className="form-control" value={this.state.searchTerm} onChange={(e)=>{this.onSearchBarChange(e)}} />
-      </form>
+        <form onSubmit={this.onSearchBarSubmit}>
+          <div className="row row justify-content-end">
+            <div className="input-group col-5">
+              <input className="form-control py-2" placeholder="Search" value={this.state.searchTerm} onChange={this.onSearchBarChange} />
+              <span className="input-group-append">
+                <button className="btn btn-outline-secondary" type="button">
+                    <i className="fa fa-search"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </form>
     )
   }
 
@@ -223,14 +236,18 @@ class StarView extends Component {
       // this.search(this.props.star);
       // console.log("Formating");
       // console.log(formatStars(this.props.auth["_id"], this.props.star));
-      // this.formattedStars = formatStars(this.props.auth["_id"], this.props.star)
-      this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
+      this.formattedStars = [];
+      if (this.state.searchTerm === "") {
+        this.formattedStars = formatStars(this.props.auth["_id"], this.props.star);
+      } else {
+        this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
+      }
       return (
         <div>
+          {this.addSearchBar()}
           {this.displayAllStars()}
           <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
           {this.displaySyncStatus()}
-          {this.addSearchBar()}
         </div>
       )
     }
