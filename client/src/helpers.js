@@ -103,7 +103,6 @@ function markFormattedStars(star, searchResult, acc) {
 
 
 export function searchAndFormatStars(searchTerm, unformatedData, userId) {
-  searchTerm = "asd";
   const allStars = unformatedData;
   const byParentId = getByParentId(allStars);
   const searchResult = search(allStars, searchTerm);
@@ -127,18 +126,10 @@ export function searchAndFormatStars(searchTerm, unformatedData, userId) {
     data: "Search Results",
     parentId: userId,
     childStars: acc,
-  },
-    {
-      index: 0.6,
-      userId: userId,
-      id: "b",
-      "_id": "b",
-      data: "bad",
-      parentId: userId,
-      childStars: [],
-    }];
+    addDisabled: true,
+  }];
 
   console.log(searchResultStar);
 
-  return searchResultStar;
+  return formatedStars.concat(searchResultStar);
 }

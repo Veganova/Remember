@@ -5,7 +5,8 @@ import * as actions from '../../actions';
 import {formatStars, searchAndFormatStars} from '../../helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
-import Fuse from 'fuse.js';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import 'react-tabs/style/react-tabs.css';
 
 class StarView extends Component {
 
@@ -29,11 +30,11 @@ class StarView extends Component {
 
     displayStars() {
         return (
-            <ul className="nav nav-tabs">
+            <TabList className="nav nav-tabs">
                 { _.map(this.formattedStars, (star) => {
-                    return <li key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></li>
+                    return <Tab key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></Tab>
                 })}
-            </ul>
+            </TabList>
         )
     }
 
@@ -51,13 +52,17 @@ class StarView extends Component {
   displayChildStars() {
     let first = true;
     return (
-      <div className="tab-content">
+        <div>
       {_.map(this.formattedStars, (star) => {
+        let d = {};
+        if (star.addDisabled) {d = {'disabled': 'disabled'}}
         const result =  (
-          <div key={star['_id']} id={star.data} className={ "form-group tab-pane fade in" + (first && "active") }>
+          <TabPanel key={star['_id']} className={ "form-group tab-pane"}>
             {this.displayStarsFull(star.childStars, star)}
             <hr className="col-xs-12" />
               <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
+                <fieldset {...d}>
+
                 <div className="row mt-5">
                   <div className="input-group col-12">
                     <input className="form-control" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
@@ -68,15 +73,15 @@ class StarView extends Component {
                     </div>
                 </div>
             </div>
+                </fieldset>
               </form>
               <div>
                 <div className="mt-2 float-right">
                   <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
                 </div>
             </div>
-           </div>
+           </TabPanel>
                   )
-         first = false;
          return result;
       })}
       </div>
@@ -144,8 +149,10 @@ class StarView extends Component {
   displayAllStars() {
     return (
       <div>
+        <Tabs>
           {this.displayStars()}
           {this.displayChildStars()}
+        </Tabs>
       </div>
     )
   }

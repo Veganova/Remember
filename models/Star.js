@@ -8,7 +8,8 @@ const starSchema = new Schema({
   userId: { type:String, required: true },
   parentId: { type:String, required: true},
   data: { type:String, required: true},
-  index: { type: Number, required: true }
+  index: { type: Number, required: true },
+  addDisabled: { type: Boolean, default: false, required: false }
 });
 
 mongoose.model('stars', starSchema);

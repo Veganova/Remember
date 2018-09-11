@@ -4,14 +4,18 @@ const Star = mongoose.model('stars');
 
 module.exports = {
   // Index is a decimal between 0 - 1 to giver ordering.
-  "addStar": async (userId, parentId, data, index) => {
-    const existingStar = await Star.findOne({userId, parentId, data});
+  "addStar": async (userId, parentId, data, index, addDisabled) => {
+    addDisabled = Boolean(addDisabled);
+    const existingParent = await Star.findOne({userId, id: parentId, data});
 
-    // stars with the same data under the same parent are considered duplicate - not allowed
-    if (existingStar) {
-      return { "error": "existingStar"};
+    if (!existingParent) {
+      return { "error": "Parent doesn't exist"}
     }
-    const newStar = await new Star({userId, parentId, data, index}).save();
+    else if (existingParent.addDisabled) {
+      return { "error": "Add disabled on selected parent"};
+    }
+
+    const newStar = await new Star({userId, parentId, data, index, addDisabled}).save();
     return newStar;
   }
 };
