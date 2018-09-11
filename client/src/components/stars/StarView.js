@@ -7,6 +7,7 @@ import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
+import SearchBar from "./SearchBar";
 
 class StarView extends Component {
 
@@ -19,7 +20,6 @@ class StarView extends Component {
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
       this.onSearchBarChange = this.onSearchBarChange.bind(this);
-      this.onSearchBarSubmit = this.onSearchBarSubmit.bind(this);
   }
 
 
@@ -30,9 +30,9 @@ class StarView extends Component {
 
     displayStars() {
         return (
-            <TabList className="nav nav-tabs">
+            <TabList>
                 { _.map(this.formattedStars, (star) => {
-                    return <Tab key={star['_id']} className="active nav-item"><a className="nav-link" data-toggle="pill" href={'#' + star.data}>{star.data}</a></Tab>
+                    return <Tab key={star.id}>{star.data}</Tab>
                 })}
             </TabList>
         )
@@ -124,7 +124,7 @@ class StarView extends Component {
               "parentId": newParentOfMovedStar.id,
               "index": newIndex,
               "data" : updatedItem.data
-          }
+          };
           this.props.updateStar(updatedItem.id, update);
         }}
       />
@@ -202,42 +202,27 @@ class StarView extends Component {
   onSearchBarChange(e) {
     let searchTerm = e.target.value;
     if (!searchTerm) {
-      this.setState({searchTerm, tabIndex: this.state.lastTabIndex})
+      this.setState({ searchTerm, tabIndex: this.state.lastTabIndex})
     } else {
-      this.setState({ searchTerm, tabIndex: this.formattedStars.length - 1 })
+      let diff = 0;
+      if (this.state.searchTerm) {
+        // already have a tab for it
+        diff = 1
+      }
+      this.setState({ searchTerm, tabIndex: this.formattedStars.length - diff })
     }
-  }
-
-  onSearchBarSubmit(e) {
-    // this.setState({ searchTerm: e.target.value })
-    e.preventDefault();
-    this.search(this.props.star, this.state.searchTerm);
   }
 
   addSearchBar() {
     return (
-        <form onSubmit={this.onSearchBarSubmit}>
-          <div className="row row justify-content-end">
-            <div className="input-group col-5">
-              <input className="form-control py-2" placeholder="Search" value={this.state.searchTerm} onChange={this.onSearchBarChange} />
-              <span className="input-group-append">
-                <button className="btn btn-outline-secondary" type="button">
-                    <i className="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-          </div>
-        </form>
+      <SearchBar searchTerm={this.state.searchTerm} onChange={this.onSearchBarChange}/>
     )
   }
 
   render() {
     if (this.props.star && this.props.auth) {
-      // this.search(this.props.star);
-      // console.log("Formating");
-      // console.log(formatStars(this.props.auth["_id"], this.props.star));
       this.formattedStars = [];
-      if (this.state.searchTerm === "") {
+      if (!this.state.searchTerm) {
         this.formattedStars = formatStars(this.props.auth["_id"], this.props.star);
       } else {
         this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));

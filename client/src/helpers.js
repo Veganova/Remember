@@ -65,6 +65,7 @@ function search(stars, search) {
     keys: [{
       name: 'data'
     }],
+    minMatchCharLength: 0,
     threshold: 0.3
   };
   const fuse = new Fuse(stars, options);
@@ -128,8 +129,6 @@ export function searchAndFormatStars(searchTerm, unformatedData, userId) {
     childStars: acc,
     addDisabled: true,
   }];
-
-  console.log(searchResultStar);
 
   return formatedStars.concat(searchResultStar);
 }
