@@ -8,6 +8,8 @@ import SingleStarView from "./SingleStarView";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
+import { style } from '../styles/StarViewStyles'
+import '../styles/StarView.css'
 
 class StarView extends Component {
 
@@ -30,7 +32,7 @@ class StarView extends Component {
 
     displayStars() {
         return (
-            <TabList>
+            <TabList style={{...style.tabList, ...style.borderStyle}}>
                 { _.map(this.formattedStars, (star) => {
                     return <Tab key={star.id}>{star.data}</Tab>
                 })}
@@ -51,18 +53,18 @@ class StarView extends Component {
 
   displayChildStars() {
     return (
-        <div>
+        <div className="single-tab">
       {_.map(this.formattedStars, (star) => {
         let d = {};
         if (star.addDisabled) {d = {'disabled': 'disabled'}}
         const result =  (
-          <TabPanel key={star['_id']} className={ "form-group tab-pane"}>
+          <TabPanel className="form-group tab-pane" key={star['_id']} >
             {this.displayStarsFull(star.childStars, star)}
-            <hr className="col-xs-12" />
+            <hr className="col-xs-12" style={ style.hrStyle } />
               <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
                 <fieldset {...d}>
 
-                <div className="row mt-5">
+                <div className="row">
                   <div className="input-group col-12">
                     <input className="form-control" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
                     <div className="input-group-append">
@@ -75,7 +77,7 @@ class StarView extends Component {
                 </fieldset>
               </form>
               <div>
-                <div className="mt-2 float-right">
+                <div className="float-right">
                   <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
                 </div>
             </div>
@@ -148,7 +150,7 @@ class StarView extends Component {
     let index = this.state.tabIndex;
     return (
       <div className="">
-        <Tabs selectedIndex={index} onSelect={tabIndex => this.setState({ tabIndex, lastTabIndex: tabIndex })}>
+        <Tabs selectedTabClassName="test" selectedIndex={index} onSelect={tabIndex => this.setState({ tabIndex, lastTabIndex: tabIndex })}>
           {this.displayStars()}
           {this.displayChildStars()}
         </Tabs>
