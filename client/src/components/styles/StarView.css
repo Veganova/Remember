@@ -3,11 +3,17 @@
 }
 
 .react-tabs__tab-list {
+    /*margin: 0; !* remove space under the tab list*!*/
+    padding: 0;
     overflow: scroll;
     white-space: nowrap;
 }
 
+
 ::-webkit-scrollbar {
-    width: 1px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
+    display: none;
+}
+
+.gray {
+    color: #aaa
 }

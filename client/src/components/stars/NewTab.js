@@ -17,6 +17,12 @@ class NewTab extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
+  componentDidMount() {
+    if (this.state.adding) {
+      this.newTabInput.focus();
+    }
+  }
+
   validTabName(starName) {
     return starName !== ""
         && starName !== "Notes"
@@ -49,7 +55,12 @@ class NewTab extends Component {
     return (
       <Tab>
         <form onSubmit={this.handleSubmit}>
-              <input className="form-control py-2" placeholder="New tab" value={this.props.searchTerm} onChange={this.handleChange} />
+              <input className="form-control py-2"
+                     autoFocus
+                     onBlur={(e) => {this.setState({adding: false})}}
+                     placeholder="New tab"
+                     value={this.state.val}
+                     onChange={this.handleChange} />
         </form>
       </Tab>
     );

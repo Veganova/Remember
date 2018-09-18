@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import '../styles/SearchBar.css';
 
 export default class SearchBar extends Component {
 
@@ -21,12 +22,12 @@ export default class SearchBar extends Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <div className="row row justify-content-end">
-          <div className="input-group col-5">
-            <input className="form-control py-2" placeholder="Search" value={this.props.searchTerm} onChange={this.handleChange} />
+        <div className="row row justify-content-center search-bar-container-space">
+          <div className="input-group col-8">
+            <input className="form-control py-2 search-bar" placeholder="Search" value={this.props.searchTerm} onChange={this.handleChange} />
             <span className="input-group-append">
                 <button className="btn btn-outline-secondary" type="button">
-                    <i className="fa fa-search"></i>
+                    <i className="fa fa-search"/>
                 </button>
               </span>
           </div>

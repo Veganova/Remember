@@ -28,7 +28,7 @@ class SingleStarView extends Component {
                 <div className="row">
                     <div className="input-group col-12">
                         <div className="input-group-prepend">
-                            <span className="input-group-text">{star.index}</span>
+                            <span className="input-group-text"><i className="fa fa-dot-circle-o"/></span>
                         </div>
                         <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={star.data} />
                         <div className="input-group-append">

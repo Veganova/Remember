@@ -6,9 +6,7 @@ import * as actions from '../actions';
 
 import Header from './Header';
 import Landing from './Landing';
-import SurveyNew from './surveys/SurveyNew';
 import StarView from './stars/StarView';
-const Dashboard = () => <h2> Dashboard </h2>
 
 class App extends Component {
   // preferred for ajax requests
@@ -19,14 +17,11 @@ class App extends Component {
 
   render() {
     return(
-      <div className="container">
+      <div >
         <BrowserRouter>
             <div>
-              <Header />
               <Route exact path="/" component={Landing} />
-              <Route exact path="/surveys" component={Dashboard} />
-              <Route path="/surveys/new" component={SurveyNew} />
-              <Route path="/star/view" component={StarView} />
+              <Route path="/notes" component={StarView} />
             </div>
         </BrowserRouter>
       </div>

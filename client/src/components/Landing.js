@@ -1,15 +1,39 @@
-import React from 'react';
-
-const Landing = () => {
-  return (
-    <div style={{ textAlign: 'center' }}>
-      <h1>
-        Emaily!
-      </h1>
-      Collect feedback form your users
-    </div>
-  );
-};
+import React, { Component } from 'react';
+import './styles/Landing.css';
+import { Redirect, Link } from 'react-router-dom'
+import { connect } from 'react-redux';
 
 
-export default Landing;
+class Landing extends Component {
+
+  renderLogin() {
+    return (
+      <div className='centered'>
+        <a href="/auth/google">
+          <i className="fa fa-user icon-login"/>
+        </a>
+      </div>
+
+    );
+  }
+
+  render() {
+    switch(this.props.auth) {
+      case null:
+        // Don't know login status yet
+        return <div>Loading...</div>;
+      case false:
+        // Note logged in yet
+        return this.renderLogin();
+      default:
+        // Already logged in, go to notes
+        return <Redirect to='/notes'/>
+    }
+  };
+}
+
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps)(Landing);

@@ -10,6 +10,7 @@ import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
 import NewTab from "./NewTab";
 import '../styles/StarView.css'
+import Logout from "./Logout";
 
 class StarView extends Component {
 
@@ -33,7 +34,7 @@ class StarView extends Component {
   displayRemove(star) {
     // Do note have delete option for the two default tabs
     if (star.data !== 'Trash' && star.data !== 'Notes') {
-      return <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>
+      return <i className="fa fa-times gray" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>
     }
   }
 
@@ -244,7 +245,8 @@ class StarView extends Component {
         this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
       }
       return (
-        <div>
+        <div class="container-fluid">
+          <Logout />
           {this.addSearchBar()}
           {this.displayAllStars()}
           <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
