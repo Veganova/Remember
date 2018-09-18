@@ -23,6 +23,13 @@ passport.use(new GoogleStrategy({
     proxy: true
   },
   async (accessToken, refreshToken, profile, done) => {
+    let username = "User";
+    if (profile.name && profile.name.givenName) {
+      username = profile.name.givenName;
+      if (profile.name.familyName) {
+        username += " " + profile.name.familyName;
+      }
+    }
     const existingUser = await User.findOne({googleId: profile.id})
 
     if (existingUser) {
@@ -30,7 +37,7 @@ passport.use(new GoogleStrategy({
     }
 
     const user = await new User({googleId: profile.id}).save();
-    configStars(user);
+    configStars(user, username);
 
 
     done(null, user);

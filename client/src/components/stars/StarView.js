@@ -8,6 +8,7 @@ import SingleStarView from "./SingleStarView";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
+import NewTab from "./NewTab";
 import { style } from '../styles/StarViewStyles'
 import '../styles/StarView.css'
 
@@ -36,6 +37,7 @@ class StarView extends Component {
                 { _.map(this.formattedStars, (star) => {
                     return <Tab key={star.id}>{star.data}</Tab>
                 })}
+                <NewTab />
             </TabList>
         )
     }

@@ -1,9 +1,13 @@
 const {addStar} = require('./addStar');
 
 module.exports = {
-  "configStars" : (user) => {
+  "configStars" : async (user, username) => {
     // Config for a new users
-    addStar(user.id, user.id, "Trash", 0.8, true);
-    addStar(user.id, user.id, "Stars", 0.2);
+    // const userStar = await addStar(user.id, user.id, username, 0);
+    const rVal = await addStar(user.id, user.id, "Trash", 0.8, true);
+    const rVal1 = await addStar(user.id, user.id, "Notes", 0.2);
+
+    console.log(rVal);
+    console.log(rVal1);
   }
 }
