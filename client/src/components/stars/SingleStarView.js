@@ -4,11 +4,13 @@ import * as actions from '../../actions';
 
 class SingleStarView extends Component {
 
+
     constructor(props) {
         super(props);
 
         this.handleNoteEditSubmit = this.handleNoteEditSubmit.bind(this);
         this.handleNoteEditChange = this.handleNoteEditChange.bind(this);
+        this.onClickHandler = this.onClickHandler.bind(this);
     }
 
     handleNoteEditSubmit(event, star) {
@@ -19,6 +21,10 @@ class SingleStarView extends Component {
 
     handleNoteEditChange(event) {
         this.props.updateLocalStar(this.props.star, event.target.value)
+    }
+
+    onClickHandler(event) {
+        event.stopPropagation();
     }
 
     render() {

@@ -10,6 +10,7 @@ import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
 import NewTab from "./NewTab";
 import '../styles/StarView.css'
+import '../styles/SearchBar.css';
 import Logout from "./Logout";
 
 class StarView extends Component {
@@ -18,7 +19,6 @@ class StarView extends Component {
       super(props);
       this.state = {newNoteValue: '', searchTerm: '', tabIndex: 0, lastTabIndex: 0};
 
-      this.addStarAction = this.addStarAction.bind(this);
       this.displayStar = this.displayStar.bind(this);
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
@@ -79,9 +79,9 @@ class StarView extends Component {
               <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
                 <fieldset {...d}>
 
-                <div className="row">
+                <div className="row search-bar-container-space">
                   <div className="input-group col-12">
-                    <input className="form-control" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
+                    <input className="form-control search-bar" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
                     <div className="input-group-append">
                       <button className="btn btn-outline-secondary" type="submit">
                         <i className="fa fa-plus" aria-hidden="true"/> Add
@@ -192,25 +192,17 @@ class StarView extends Component {
     return largestIndex;
   }
 
-  addStarAction() {
-    var d = new Date();
-    const notesStarId = this.getStarWithData(this.props.star, 'Stars')['_id'];
-
-    const index = (this.getLargestIndexWithParentId(this.props.star, notesStarId) + 1) / 2;
-    this.props.addStar(notesStarId, d.getHours() + ":" + d.getMinutes() +":"+ d.getSeconds(), index);
-  }
-
   displaySyncStatus() {
     if (_.isEmpty(this.props.sync)) {
       return (
         <div className="">
-          <span className="badge badge-pill badge-success">Synced</span>
+          <span className="badge badge-pill badge-success synced">Synced</span>
         </div>
       );
     } else {
       return (
         <div className="">
-          <span className="badge badge-pill badge-danger">Changes Made</span>
+          <span className="badge badge-pill badge-danger synced">Changes Made</span>
         </div>
       );
     }
@@ -245,11 +237,10 @@ class StarView extends Component {
         this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
       }
       return (
-        <div class="container-fluid">
+        <div className="container-fluid">
           <Logout />
           {this.addSearchBar()}
           {this.displayAllStars()}
-          <button className="btn btn-success" onClick={this.addStarAction}><i className="fa fa-plus"></i> Note</button>
           {this.displaySyncStatus()}
         </div>
       )

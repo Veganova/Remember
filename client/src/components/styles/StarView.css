@@ -15,5 +15,9 @@
 }
 
 .gray {
-    color: #aaa
+    color: #ccc;
+}
+
+.synced {
+    font-size: 15px;
 }
