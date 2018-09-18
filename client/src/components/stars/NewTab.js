@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import { Tab } from 'react-tabs';
+import { connect } from 'react-redux'
+import * as actions from "../../actions";
 
-export default class NewTab extends Component {
+class NewTab extends Component {
 
   constructor(props) {
     super(props);
@@ -24,7 +26,11 @@ export default class NewTab extends Component {
   handleSubmit(event) {
     event.preventDefault();
     if(this.validTabName(this.state.val)) {
+      const newIndex = (this.props.prevIndex + 1) / 2;
+      this.props.addStar(this.props.auth['_id'], this.state.val, newIndex);
 
+      // Empty out input box
+      this.setState({val: ''});
     }
   }
 
@@ -43,9 +49,15 @@ export default class NewTab extends Component {
     return (
       <Tab>
         <form onSubmit={this.handleSubmit}>
-              <input className="form-control py-2" placeholder="Search" value={this.props.searchTerm} onChange={this.handleChange} />
+              <input className="form-control py-2" placeholder="New tab" value={this.props.searchTerm} onChange={this.handleChange} />
         </form>
       </Tab>
     );
   }
 }
+
+function mapStateToProps({ auth }) {
+  return { auth };
+}
+
+export default connect(mapStateToProps, actions)(NewTab);

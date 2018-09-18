@@ -120,7 +120,7 @@ export function searchAndFormatStars(searchTerm, unformatedData, userId) {
     acc[i].parentId = "a";
   }
   const searchResultStar = [{
-    index: 0.5,
+    index: 0.999999,
     userId: userId,
     id: "a",
     "_id": "a",

@@ -9,7 +9,6 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
 import NewTab from "./NewTab";
-import { style } from '../styles/StarViewStyles'
 import '../styles/StarView.css'
 
 class StarView extends Component {
@@ -31,15 +30,28 @@ class StarView extends Component {
   }
 
 
-    displayStars() {
-        return (
-            <TabList style={{...style.tabList, ...style.borderStyle}}>
-                { _.map(this.formattedStars, (star) => {
-                    return <Tab key={star.id}>{star.data}</Tab>
-                })}
-                <NewTab />
-            </TabList>
-        )
+  displayRemove(star) {
+    // Do note have delete option for the two default tabs
+    if (star.data !== 'Trash' && star.data !== 'Notes') {
+      return <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>
+    }
+  }
+
+  displayStars() {
+    let prevIndex = 0;
+      return (
+          <TabList>
+              { _.map(this.formattedStars, (star) => {
+                prevIndex = star.index;
+                  return (
+                    <Tab key={star.id}>{star.data + " "}
+                      {this.displayRemove(star)}
+                    </Tab>
+                  )
+              })}
+              <NewTab prevIndex={prevIndex}/>
+          </TabList>
+      )
     }
 
   handleNewNoteChange(event) {
@@ -62,7 +74,7 @@ class StarView extends Component {
         const result =  (
           <TabPanel className="form-group tab-pane" key={star['_id']} >
             {this.displayStarsFull(star.childStars, star)}
-            <hr className="col-xs-12" style={ style.hrStyle } />
+            <hr className="col-xs-12"/>
               <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
                 <fieldset {...d}>
 
@@ -71,7 +83,7 @@ class StarView extends Component {
                     <input className="form-control" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
                     <div className="input-group-append">
                       <button className="btn btn-outline-secondary" type="submit">
-                        <i className="fa fa-plus" aria-hidden="true"></i> Add
+                        <i className="fa fa-plus" aria-hidden="true"/> Add
                       </button>
                     </div>
                 </div>
@@ -152,7 +164,7 @@ class StarView extends Component {
     let index = this.state.tabIndex;
     return (
       <div className="">
-        <Tabs selectedTabClassName="test" selectedIndex={index} onSelect={tabIndex => this.setState({ tabIndex, lastTabIndex: tabIndex })}>
+        <Tabs selectedIndex={index} onSelect={tabIndex => this.setState({ tabIndex, lastTabIndex: tabIndex })}>
           {this.displayStars()}
           {this.displayChildStars()}
         </Tabs>

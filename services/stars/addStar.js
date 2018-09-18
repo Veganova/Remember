@@ -22,7 +22,6 @@ module.exports = {
     }
 
     const newStar = await new Star({userId, parentId, data, index, addDisabled}).save();
-    console.log(newStar);
     return newStar;
   }
 };
