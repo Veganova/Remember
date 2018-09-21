@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
+import '../styles/SingleStarView.css';
 
 class SingleStarView extends Component {
 
@@ -32,15 +33,17 @@ class SingleStarView extends Component {
         return (
             <form onSubmit={(e)=> this.handleNoteEditSubmit(e, star)}>
                 <div className="row">
-                    <div className="input-group col-12">
-                        <div className="input-group-prepend">
-                            <span className="input-group-text"><i className="fa fa-dot-circle-o"/></span>
-                        </div>
-                        <input className="form-control" onChange={this.handleNoteEditChange} type="text" value={star.data} />
-                        <div className="input-group-append">
-                            <button className="btn btn-outline-secondary" onClick={() => this.props.removeStar(star.id)} type="button">
-                                <i className="fa fa-times" aria-hidden="true"/> Remove
-                            </button>
+                    <div className="col-12">
+                        <div className="star-group input-group">
+                            <div className="input-group-prepend">
+                                <span className="input-group-text"><i className="fa fa-dot-circle-o"/></span>
+                            </div>
+                            <input className="form-control star-input" onChange={this.handleNoteEditChange} type="text" value={star.data} />
+                            <div className="input-group-append">
+                              <span className="input-group-text star-remove">
+                                <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>
+                              </span>
+                            </div>
                         </div>
                     </div>
                 </div>

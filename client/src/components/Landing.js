@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './styles/Landing.css';
-import { Redirect, Link } from 'react-router-dom'
+import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 
 
@@ -9,6 +9,7 @@ class Landing extends Component {
   renderLogin() {
     return (
       <div className='centered'>
+        <h3>Login and take notes!</h3>
         <a href="/auth/google">
           <i className="fa fa-user icon-login"/>
         </a>

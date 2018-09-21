@@ -1,12 +1,17 @@
-.icon-login {
-    font-size: 45vw;
-    background-color: #9ec4e6;
+.icon-login-old {
+    font-size: 30vw;
+    background-color: transparent;
     color: #e0e9fa;
     display: inline-block;
     height: 0;
     padding-bottom: 50%;
     width: 50%;
     border-radius: 50%;
+}
+
+.icon-login {
+    font-size: 30vw;
+    color: #b8c0d1;
 }
 
 .icon-login:hover {

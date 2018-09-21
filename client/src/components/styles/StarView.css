@@ -21,3 +21,28 @@
 .synced {
     font-size: 15px;
 }
+
+
+.nestable-item.is-dragging {
+    /*background: red;*/
+}
+/* Injecting own colors into Nestable classes */
+.nestable-item.is-dragging:before {
+    background: rgba(98, 168, 255, 0.2);
+    /*rgba(164, 202, 236, 0.19);*/
+    border: 2px solid rgba(98, 168, 255, 0.5);
+    border-radius: 0;
+}
+
+.nestable-item:hover {
+}
+
+.nestable-item .nestable-list, .nestable-item-copy .nestable-list {
+    margin: 0;
+    background: transparent;
+}
+
+.nestable-item, .nestable-item-copy {
+    margin-top: 0;
+    background: transparent;
+}
