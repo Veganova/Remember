@@ -1,4 +1,4 @@
-import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR } from '../actions/types'
+import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS} from '../actions/types'
 import { constructStars } from '../helpers.js';
 
 
@@ -76,6 +76,9 @@ export default function(state = null, action) {
       arg[newStar['_id']] = [];
 
       const formattedStar = constructStars(arg, newStar.parentId)[0];
+      // For newly added - the input should focus so the user can type immediately
+      newState.forEach(star=> star.focus = false);
+      formattedStar.focus = true;
       return addStar(newState, formattedStar);
     case UPDATE_STAR:
       return updateStar(newState, action.payload);
@@ -93,6 +96,9 @@ export default function(state = null, action) {
       alert("Update local star failed to find a star with id " + action.payload.id);
       // error message
       return state;
+    case CLEAR_FOCUS:
+      newState.forEach(star => star.focus = false);
+      return newState;
     default:
       return state;
   }

@@ -23,11 +23,12 @@ class StarView extends Component {
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
       this.onSearchBarChange = this.onSearchBarChange.bind(this);
+      this.getNextStarIndex = this.getNextStarIndex.bind(this);
   }
 
 
   displayStar(star) {
-      return <SingleStarView star={star}/>;
+      return <SingleStarView star={ star } getNextStarIndex={ this.getNextStarIndex }/>;
   }
 
 
@@ -159,6 +160,18 @@ class StarView extends Component {
         return result;
       }
     }
+  }
+
+  getNextStarIndex(star) {
+    const parent = this.findInNestable(star, this.formattedStars, undefined);
+
+    for (let i = 0; i < parent.childStars.length; i++) {
+      // return first index found greater than provided star's index
+      if (parent.childStars[i].index > star.index) {
+        return parent.childStars[i].index;
+      }
+    }
+    return 1;
   }
 
   displayAllStars() {

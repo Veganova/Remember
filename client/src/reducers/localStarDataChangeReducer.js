@@ -1,4 +1,4 @@
-import { GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR } from '../actions/types'
+import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS} from '../actions/types'
 import { constructStars } from '../helpers.js';
 
 // state is a mapping of starId -> difference in data

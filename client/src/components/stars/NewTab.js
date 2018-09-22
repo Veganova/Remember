@@ -17,12 +17,6 @@ class NewTab extends Component {
     this.handleChange = this.handleChange.bind(this);
   }
 
-  componentDidMount() {
-    if (this.state.adding) {
-      this.newTabInput.focus();
-    }
-  }
-
   validTabName(starName) {
     return starName !== ""
         && starName !== "Notes"
