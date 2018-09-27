@@ -14,9 +14,12 @@ class SingleStarView extends Component {
     this.onClickHandler = this.onClickHandler.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
-    this.updateStar = _.debounce(this.props.updateStar, 500);
+    this.doneTyping = this.doneTyping.bind(this);
 
+    this.updateStar = _.debounce(this.props.editStar, 500);
 
+    this.doneTypingUpdate = 1500;
+    this.typingTimer;
   }
 
   componentDidMount() {
@@ -33,6 +36,11 @@ class SingleStarView extends Component {
     }
   }
 
+  doneTyping() {
+    const star = this.props.star;
+    this.props.updateStar(star.id, star.data);
+  }
+
   handleNoteEditSubmit(event) {
     event.preventDefault();
   }
@@ -47,6 +55,9 @@ class SingleStarView extends Component {
   }
 
   handleKeyUp(e) {
+    clearTimeout(this.typingTimer);
+    this.typingTimer = setTimeout(this.doneTyping, this.doneTypingUpdate);
+
     if (e.keyCode === 8) {
       if (this.props.star.data === '') {
         this.props.removeStar(this.props.star.id);
@@ -67,7 +78,7 @@ class SingleStarView extends Component {
     // Need to update locally. Fuse seems to break when this.state is used in the input instead of this.props.
     // Unsure why but consitently broke the search switching to state. thus using redux to populate this.props.star on keytype.
     this.props.updateLocalStar(star, data);
-    this.updateStar(star.id, {data});
+    this.updateStar(star.id, { data });
   }
 
   // set this on <input> for Nestable to no longer be able to drag by input onMouseDown={this.onClickHandler}

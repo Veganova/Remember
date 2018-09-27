@@ -1,4 +1,4 @@
-import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS} from '../actions/types'
+import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
 import { constructStars } from '../helpers.js';
 
 
@@ -98,7 +98,9 @@ export default function(state = null, action) {
       return state;
     case CLEAR_FOCUS:
       newState.forEach(star => star.focus = false);
-      return newState;
+      return newState
+    case EDIT_STAR:
+      return state;
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS} from '../actions/types'
+import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
 import { constructStars } from '../helpers.js';
 
 // state is a mapping of starId -> difference in data
@@ -41,6 +41,10 @@ export default function(state = {}, action) {
         newState[action.payload.star.id].newData = action.payload.data;
       }
       return newState;
+    case CLEAR_FOCUS:
+      return state;
+    case EDIT_STAR:
+      return state;
     default:
       return state;
   }

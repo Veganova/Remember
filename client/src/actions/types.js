@@ -6,3 +6,4 @@ export const UPDATE_STAR = 'update_star';
 export const REMOVE_CHILDREN = 'remove_children';
 export const UPDATE_LOCAL_STAR = 'update_local_star';
 export const CLEAR_FOCUS = 'clear_focus';
+export const EDIT_STAR = "edit_star";
