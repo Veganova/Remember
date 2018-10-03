@@ -32,7 +32,7 @@ npm run dev
 ```
 
 #### Terminolgy
-The project uses the term 'star' which can be thought of as a note with added metadata. Each star has a `parentId` ([star model](models/Star.js)) which allows the front end to format the data into a tree.
+The project uses the term 'star' which can be thought of as a note with added metadata. Each star has a `parentId` ([star model](models/Star.js)) which allows the front end to format the list of 'stars' (provided by /api/stars/get) into a hierarchical tree.
 
 The backend API endpoints are specified at [starRoutes](routes/starRoutes.js).
 
