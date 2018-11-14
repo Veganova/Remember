@@ -19,20 +19,26 @@ class SingleStarView extends Component {
     this.updateStar = _.debounce(this.props.editStar, 500);
 
     this.doneTypingUpdate = 1500;
-    this.typingTimer;
+    this.typingTimer, this.clickTimeout;
+
+    this.clicks = 0;
   }
 
   componentDidMount() {
+    this.focusInput()
+  }
+
+  componentDidUpdate() {
+    this.focusInput()
+  }
+
+  focusInput() {
     if (this.props.star.focus) {
       this.textInput.focus();
       this.props.clearFocus();
     }
-  }
-
-  componentDidUpdate() {
-    if (this.props.star.focus) {
+    if (this.props.isSelected) {
       this.textInput.focus();
-      this.props.clearFocus();
     }
   }
 
@@ -65,7 +71,7 @@ class SingleStarView extends Component {
     } else if (e.keyCode === 38) {
       // UP arrow
       // simulate shift-tab
-    } else if (e.keyCode === 40) {
+    } else if (e.kCode === 40) {
       // DOWN arrow
       // simulate tab
     }
@@ -78,13 +84,56 @@ class SingleStarView extends Component {
     // Need to update locally. Fuse seems to break when this.state is used in the input instead of this.props.
     // Unsure why but consitently broke the search switching to state. thus using redux to populate this.props.star on keytype.
     this.props.updateLocalStar(star, data);
-    this.updateStar(star.id, { data });
+    this.updateStar(star.id, {data});
   }
 
   // set this on <input> for Nestable to no longer be able to drag by input onMouseDown={this.onClickHandler}
-  onClickHandler(event) {
-    event.stopPropagation();
-    event.preventDefault();
+
+  onClickHandler() {
+    let resetClick = () => {
+      this.clicks = 0
+    }
+    this.clicks += 1;
+    if (this.clicks >= 2) {
+      resetClick()
+      this.props.selected(this.props.star);
+    } else {
+      // first click has occurred, see if user clicks again quickly. If they don't, reset click count
+      this.clickTimeout = setTimeout(() => {
+        resetClick()
+      }, 300);
+    }
+  }
+
+  renderInput() {
+    const star = this.props.star;
+    if (this.props.isSelected) {
+      return (
+        <textarea className="form-control star-input"
+                  ref={(input) => {
+                    this.textInput = input;
+                  }}
+                  onChange={(e) => this.handleNoteEditChange(e, star)}
+                  value={star.data}
+                  onKeyPress={this.handleKeyPress}
+                  onKeyDown={this.handleKeyUp}
+                  onBlur={() => this.props.selected(null)}
+        />)
+    } else {
+      return (
+        <input className="form-control star-input"
+               ref={(input) => {
+                 this.textInput = input;
+               }}
+               onChange={(e) => this.handleNoteEditChange(e, star)}
+               type="text"
+               value={star.data}
+               onKeyPress={this.handleKeyPress}
+               onKeyDown={this.handleKeyUp}
+               onClick={this.onClickHandler}
+          // onFocus={() => this.props.selected(this.props.star)}
+        />);
+    }
   }
 
   render() {
@@ -97,15 +146,7 @@ class SingleStarView extends Component {
               <div className="input-group-prepend">
                 <span className="input-group-text"><i className="fa fa-dot-circle-o"/></span>
               </div>
-              <input className="form-control star-input"
-                     ref = {(input) => { this.textInput = input; }}
-                     onChange={(e) => this.handleNoteEditChange(e, star)}
-                     type="text"
-                     value={star.data}
-                     onKeyPress={this.handleKeyPress}
-                     onKeyDown={this.handleKeyUp}
-
-              />
+              {this.renderInput()}
               <div className="input-group-append">
                   <span className="input-group-text star-remove">
                     <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>

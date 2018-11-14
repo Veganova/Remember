@@ -17,20 +17,31 @@ class StarView extends Component {
 
   constructor(props) {
       super(props);
-      this.state = {newNoteValue: '', searchTerm: '', tabIndex: 0, lastTabIndex: 0};
+      this.nullStarId = -1;
+      this.state = {newNoteValue: '', searchTerm: '', tabIndex: 0, lastTabIndex: 0, selectedStar: this.nullStarId};
 
       this.displayStar = this.displayStar.bind(this);
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
       this.onSearchBarChange = this.onSearchBarChange.bind(this);
       this.getNextStarIndex = this.getNextStarIndex.bind(this);
+      this.starSelected = this.starSelected.bind(this);
   }
 
+  starSelected(star) {
+    let starId = this.nullStarId;
+    if (star) {
+      starId = star.id
+    }
+    this.setState({selectedStar: starId})
+  }
 
   displayStar(star) {
-      return <SingleStarView star={ star } getNextStarIndex={ this.getNextStarIndex }/>;
+      return <SingleStarView star={ star }
+                             getNextStarIndex={ this.getNextStarIndex }
+                             isSelected={ star.id === this.state.selectedStar }
+                             selected={ this.starSelected }/>;
   }
-
 
   displayRemove(star) {
     // Do note have delete option for the two default tabs
