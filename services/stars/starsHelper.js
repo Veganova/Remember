@@ -49,6 +49,8 @@ function getByParentId(allStars) {
 // recieves flat list and returns a list of ids
 function findAllIdsUnderParent(parentId, starByParentId) {
   const total = [];
+  console.log();
+
   const childStars = starByParentId[parentId];
   for (let i = 0; i < childStars.length; i++) {
     let childStar = childStars[i];
