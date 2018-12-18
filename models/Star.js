@@ -9,7 +9,9 @@ const starSchema = new Schema({
   parentId: { type:String, required: true},
   data: { type:String, required: myRequired, validation: [dataValidation, "Data is incorrect for star"] },
   index: { type: Number, required: true },
-  addDisabled: { type: Boolean, default: false, required: false }
+  addDisabled: { type: Boolean, default: false, required: false },
+  prev: { type:String, required: false },
+  next: { type:String, required: false }
 });
 
 function dataValidation(data) {
