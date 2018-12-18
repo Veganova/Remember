@@ -1,5 +1,6 @@
 import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
 import { constructStars } from '../helpers.js';
+import {getById} from "../helpers";
 
 
 
@@ -60,6 +61,36 @@ function addStar(newState, formattedStar) {
   return newState;
 }
 
+/**
+ * Uses the 'prev' and 'next' field in stars to compile a single list that contains the provided different linked lists
+ * sorted. The result may vary but will always maintain the property that every linked list within is in the correct order.
+ * O(n) time complexity.
+ * @param stars A list of stars. There are many linked lists contained within this list.
+ */
+function linkSort(stars) {
+  let byId = getById(stars);
+
+  let result = [];
+  let stack = [];
+  stars.forEach(star => {
+    if(!star.prev) {
+      stack.push(star);
+    }
+  });
+  while (stack.length > 0) {
+    let curStar = stack.pop();
+
+    result.push(curStar);
+
+    if (curStar.next) {
+      // Next id not null
+      stack.push(byId[curStar.next]);
+    }
+  }
+
+  return result;
+}
+
 // recieved stars (action.payload) wll have a correct index.
 export default function(state = null, action) {
   const newState = JSON.parse(JSON.stringify(state));
@@ -68,7 +99,10 @@ export default function(state = null, action) {
   }
   switch (action.type) {
     case GET_STARS:
-      return action.payload || [];
+      if (!action.payload) {
+        return [];
+      }
+      return linkSort(action.payload);
     case ADD_STAR:
       const arg = {};
       const newStar = action.payload;

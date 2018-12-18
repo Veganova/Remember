@@ -1,5 +1,13 @@
 import Fuse from 'fuse.js';
 
+export function getById(allStars) {
+  const byId= {};
+  allStars.forEach((star) => {
+    byId[star['_id']] = star;
+  });
+  return byId;
+}
+
 
 function getByParentId(allStars) {
   const byParentId = {};
