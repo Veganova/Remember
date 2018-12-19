@@ -11,8 +11,8 @@ const getStars = () => async dispatch => {
   dispatch({ type: GET_STARS, payload: res.data });
 };
 
-const addStar = (parentId, data, index) => async dispatch => {
-  const res = await axios.post('/api/star/add', {parentId, data, index});
+const addStar = (parentId, data, prevId, nextId) => async dispatch => {
+  const res = await axios.post('/api/star/add', {parentId, data, prevId, nextId});
   dispatch({ type: ADD_STAR, payload: res.data });
 };
 

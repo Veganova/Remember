@@ -38,7 +38,6 @@ class StarView extends Component {
 
   displayStar(star) {
       return <SingleStarView star={ star }
-                             getNextStarIndex={ this.getNextStarIndex }
                              isSelected={ star.id === this.state.selectedStar }
                              selected={ this.starSelected }/>;
   }

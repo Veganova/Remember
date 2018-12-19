@@ -1,8 +1,8 @@
 const {addStar} = require('../services/stars/addStar');
 const {removeStar} = require('../services/stars/removeStar');
 const {removeChildren} = require('../services/stars/removeChildren');
-const {showStars, constructStars}  = require('../services/stars/showStars');
-const {updateStar}  = require('../services/stars/updateStar');
+const {showStars}  = require('../services/stars/showStars');
+const {updateStar, moveStarById}  = require('../services/stars/updateStar');
 
 module.exports = (app) => {
   app.use("/api/star", (req, res, next) => {
@@ -19,13 +19,10 @@ module.exports = (app) => {
     const userId = req.user.id;
     const parentId = body.parentId || userId;
     const data = body.data;
-    const index = body.index;
-    const newStar = await addStar(userId, parentId, data, index);
+    const prev = body.prev;
+    const next = body.next;
+    const newStar = await addStar(userId, parentId, data, prev, next);
 
-    // const arg = {};
-    // arg[newStar.parentId] = [newStar];
-    // arg[newStar.id] = [];
-    // const formattedStar = constructStars(arg, newStar.parentId);
     res.send(newStar);
   });
 
@@ -36,6 +33,16 @@ module.exports = (app) => {
     const starId = req.body.id;
     const update = req.body.update;
     const result = await updateStar(userId, starId, update);
+    res.send(result);
+  });
+
+  app.put('/api/star/move', async (req, res) => {
+    const userId = req.user.id;
+    const prevId = req.body.prevId;
+    const nextId = req.body.nextId;
+    const starId = req.body.starId;
+
+    const result = await moveStarById(userId, prevId, nextId, starId);
     res.send(result);
   });
 
@@ -59,4 +66,4 @@ module.exports = (app) => {
     const stuff = await removeChildren(userId, parentId);
     res.send(stuff);
   });
-}
+};
