@@ -24,7 +24,6 @@ module.exports = {
     }
 
     const newStar = await new Star({userId, parentId, data, prev, next, addDisabled}).save();
-    const rv = await moveStar(prev, next, newStar);
 
     return newStar;
   }

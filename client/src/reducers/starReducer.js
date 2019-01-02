@@ -48,16 +48,20 @@ function updateStar(state, updatedStar) {
 
 function addStar(newState, formattedStar) {
   let previousLength = newState.length;
+  if (formattedStar.prev === null) {
+    newState.unshift(formattedStar);
+  }
   for (let i = 0; i < newState.length; i++) {
-    if (formattedStar.index < newState[i].index) {
-      newState.splice(i, 0, formattedStar);
+    if (formattedStar.prev === newState[i]['_id']) {
+      newState.splice(i + 1, 0, formattedStar);
       break;
     }
   }
 
   if (newState.length === previousLength) {
-    newState.push(formattedStar);
+    alert('add star reducer did not add element to state');
   }
+
   return newState;
 }
 
@@ -91,7 +95,7 @@ function linkSort(stars) {
   return result;
 }
 
-// recieved stars (action.payload) wll have a correct index.
+// receives affected star(s) in action.payload
 export default function(state = null, action) {
   const newState = JSON.parse(JSON.stringify(state));
   if (action.payload && action.payload.error) {

@@ -21,6 +21,12 @@ const updateStar = (id, update) => async dispatch => {
   dispatch({ type: UPDATE_STAR, payload: res.data });
 };
 
+// prev and next are the new ids
+const moveStar = (starId, prevId, nextId) => async dispatch => {
+  const res = await axios.put('/api/star/move', {prevId, nextId, starId});
+  dispatch({ type: UPDATE_STAR, payload: res.data });
+}
+
 const removeStar = (id) => async dispatch => {
   const res = await axios.delete('/api/star/remove', { data: { id }});
   dispatch({ type: REMOVE_STAR, payload: res.data });
@@ -45,4 +51,4 @@ const editStar = (id, update) => async dispatch => {
   dispatch({ type: EDIT_STAR, payload: res.data });
 };
 
-export { fetchUser, getStars, addStar, updateStar, removeStar, removeChildren, updateLocalStar, clearFocus, editStar };
+export { fetchUser, getStars, addStar, updateStar, removeStar, removeChildren, updateLocalStar, clearFocus, editStar, moveStar };

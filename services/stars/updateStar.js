@@ -41,9 +41,10 @@ async function moveStar(userId, prevId, nextId, star) {
   if (nextId) {
     await Star.find({userId, "_id": nextId}).update({$set: {prev: starId}});
   }
-  await Star.find({userId, "_id": starId}).update({$set: {prev: prevId, next: nextId}});
+
+  let rv = await Star.find({userId, "_id": starId}).update({$set: {prev: prevId, next: nextId}});
   // bulk.execute();
-  return {d: "done"};
+  return rv;
   // return new Promise((resolve, reject) => bulk.execute((x) => resolve(x)));
 }
 

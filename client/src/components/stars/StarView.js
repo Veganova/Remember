@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
-import {formatStars, searchAndFormatStars} from '../../helpers';
+import {formatStars, getById, searchAndFormatStars} from '../../helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
@@ -24,7 +24,7 @@ class StarView extends Component {
       this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
       this.onSearchBarChange = this.onSearchBarChange.bind(this);
-      this.getNextStarIndex = this.getNextStarIndex.bind(this);
+      // this.getNextStarIndex = this.getNextStarIndex.bind(this);
       this.starSelected = this.starSelected.bind(this);
   }
 
@@ -50,18 +50,19 @@ class StarView extends Component {
   }
 
   displayStars() {
-    let prevIndex = 0;
+    let prevId = null;
       return (
           <TabList>
               { _.map(this.formattedStars, (star) => {
-                prevIndex = star.index;
+                prevId = star.id;
                   return (
-                    <Tab key={star.id}>{star.data + " "}
+                    <Tab key={star.id}>
+                      {star.data + " "}
                       {this.displayRemove(star)}
                     </Tab>
                   )
               })}
-              <NewTab prevIndex={prevIndex}/>
+              <NewTab prevId={prevId}/>
           </TabList>
       )
     }
@@ -72,8 +73,13 @@ class StarView extends Component {
 
   handleNewNoteSubmit(event, star) {
     event.preventDefault();
-    const newIndex = (this.getLargestIndexWithParentId(this.props.star, star.id) + 1) / 2;
-    this.props.addStar(star.id, this.state.newNoteValue, newIndex);
+    let length = star.childStars.length;
+    let prev = null;
+    if (length > 0) {
+      prev = star.childStars[length - 1]['_id'];
+    }
+    this.props.addStar(star.id, this.state.newNoteValue, prev, null);
+
     this.setState({newNoteValue: ""});
   }
 
@@ -124,36 +130,43 @@ class StarView extends Component {
         childrenProp = "childStars"
         renderItem={(item)=> this.displayStar(item.item)}
         onChange={(items, updatedItem) => {
-            //passing in undefined to identify when the item is on the base (outermost) level
+          // passing in undefined to identify when the item is on the base (outermost) level
           let newParentOfMovedStar = this.findInNestable(updatedItem, items, undefined);
-          let lowerNeighbor = 0;
-          let upperNeighbor = 1;
+          let lowerNeighbor = null;
+          let upperNeighbor = null;
 
+          // parent is top level star
           if (!newParentOfMovedStar) {
             newParentOfMovedStar = {
               childStars: items,
               id: parentIdHappy
             };
           }
+
           let siblingStars = newParentOfMovedStar.childStars;
 
           for (let i = 0; i < siblingStars.length; i++) {
             if (siblingStars[i].id === updatedItem.id) {
               if (i < siblingStars.length - 1) {
-                upperNeighbor = siblingStars[i+1].index;
+                upperNeighbor = siblingStars[i+1];
               }
               break;
             }
-            lowerNeighbor = siblingStars[i].index;
+            lowerNeighbor = siblingStars[i];
           }
+          let byId = getById(this.state.stars);
+          // temporary update locally
+          // byId[updatedItem.prev].next = updatedItem.next;
+          // byId[updatedItem.next].prev = updatedItem.prev;
+          //
+          // lowerNeighbor.next = updatedItem.id;
+          // upperNeighbor.prev = updatedItem.id;
+          //
+          // updatedItem.prev = lowerNeighbor.id;
+          // updatedItem.next = upperNeighbor.id;
 
-          const newIndex = (lowerNeighbor + upperNeighbor) / 2;
-          const update = {
-              "parentId": newParentOfMovedStar.id,
-              "index": newIndex,
-              "data" : updatedItem.data
-          };
-          this.props.updateStar(updatedItem.id, update);
+          // updated database
+          this.props.move(updatedItem.id, lowerNeighbor, upperNeighbor);
         }}
       />
     )
@@ -172,17 +185,17 @@ class StarView extends Component {
     }
   }
 
-  getNextStarIndex(star) {
-    const parent = this.findInNestable(star, this.formattedStars, undefined);
-
-    for (let i = 0; i < parent.childStars.length; i++) {
-      // return first index found greater than provided star's index
-      if (parent.childStars[i].index > star.index) {
-        return parent.childStars[i].index;
-      }
-    }
-    return 1;
-  }
+  // getNextStarIndex(star) {
+  //   const parent = this.findInNestable(star, this.formattedStars, undefined);
+  //
+  //   for (let i = 0; i < parent.childStars.length; i++) {
+  //     // return first index found greater than provided star's index
+  //     if (parent.childStars[i].index > star.index) {
+  //       return parent.childStars[i].index;
+  //     }
+  //   }
+  //   return 1;
+  // }
 
   displayAllStars() {
     let index = this.state.tabIndex;
@@ -202,17 +215,6 @@ class StarView extends Component {
         return stars[i];
       }
     }
-  }
-
-  getLargestIndexWithParentId(stars, parentId) {
-    let largestIndex = 0;
-    for (let i = 0; i < stars.length; i++) {
-      const star = stars[i];
-      if (star.parentId === parentId && largestIndex < star.index) {
-        largestIndex = star.index;
-      }
-    }
-    return largestIndex;
   }
 
   displaySyncStatus() {
