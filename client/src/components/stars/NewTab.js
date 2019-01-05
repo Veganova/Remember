@@ -26,7 +26,7 @@ class NewTab extends Component {
   handleSubmit(event) {
     event.preventDefault();
     if(this.validTabName(this.state.val)) {
-      this.props.addStar(this.props.auth['_id'], this.state.val, this.props.prevId, null);
+      this.props.addStar(this.props.auth['_id'], this.state.val, this.props.prevId, "");
 
       // Empty out input box
       this.setState({val: ''});

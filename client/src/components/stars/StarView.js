@@ -50,7 +50,7 @@ class StarView extends Component {
   }
 
   displayStars() {
-    let prevId = null;
+    let prevId = "";
       return (
           <TabList>
               { _.map(this.formattedStars, (star) => {
@@ -73,12 +73,15 @@ class StarView extends Component {
 
   handleNewNoteSubmit(event, star) {
     event.preventDefault();
+
     let length = star.childStars.length;
-    let prev = null;
+    let prev = "";
     if (length > 0) {
       prev = star.childStars[length - 1]['_id'];
     }
-    this.props.addStar(star.id, this.state.newNoteValue, prev, null);
+    console.log("abc", star);
+    console.log("new submit", prev);
+    this.props.addStar(star.id, this.state.newNoteValue, prev, "");
 
     this.setState({newNoteValue: ""});
   }
@@ -132,8 +135,8 @@ class StarView extends Component {
         onChange={(items, updatedItem) => {
           // passing in undefined to identify when the item is on the base (outermost) level
           let newParentOfMovedStar = this.findInNestable(updatedItem, items, undefined);
-          let lowerNeighbor = null;
-          let upperNeighbor = null;
+          let lowerNeighbor = "";
+          let upperNeighbor = "";
 
           // parent is top level star
           if (!newParentOfMovedStar) {

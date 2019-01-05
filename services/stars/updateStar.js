@@ -16,6 +16,7 @@ async function moveStarById(userId, prevId, nextId, starId) {
 
 /**
  * Moves the star by fixing the next, prev pointers of the stars at the current and new location.
+ * Last star in the returned list should be the targeted one (the one that was actually moved). Rest are ones affected.
  *
  * @param userId
  * @param prevId  id of star right before the current new location (null if there is none)
@@ -27,24 +28,30 @@ async function moveStar(userId, prevId, nextId, star) {
   // let bulk = Star.collection.initializeUnorderedBulkOp();
 
   // Update stars at previous location
+  let changedStars = [];
   if (star.prev) {
-    await Star.find({userId, "_id": star.prev}).update({$set: {next: star.next}});
+    changedStars.push(await updateStar(userId, star.prev, {next: star.next}));
   }
   if (star.next) {
-    await Star.find({userId, "_id": star.next}).update({$set: {prev: star.prev}});
+    changedStars.push(await updateStar(userId, star.next, {prev: star.prev}));
   }
 
   // Update stars at new location (where the star is moved to)
   if (prevId) {
-    await Star.find({userId, "_id": prevId}).update({$set: {next: starId}});
-  }
-  if (nextId) {
-    await Star.find({userId, "_id": nextId}).update({$set: {prev: starId}});
+    changedStars.push(await updateStar(userId, prevId, {next: starId}));
   }
 
-  let rv = await Star.find({userId, "_id": starId}).update({$set: {prev: prevId, next: nextId}});
-  // bulk.execute();
-  return rv;
+  changedStars.push(await updateStar(userId, starId, {prev: prevId, next: nextId}));
+
+  if (nextId) {
+    changedStars.push(await updateStar(userId, nextId, {prev: starId}));
+  }
+
+
+  return changedStars;
+  // let rv = await Star.find({userId, "_id": starId}).update({$set: {prev: prevId, next: nextId}});
+  // // bulk.execute();
+  // return rv;
   // return new Promise((resolve, reject) => bulk.execute((x) => resolve(x)));
 }
 

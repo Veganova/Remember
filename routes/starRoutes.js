@@ -19,8 +19,8 @@ module.exports = (app) => {
     const userId = req.user.id;
     const parentId = body.parentId || userId;
     const data = body.data;
-    const prev = body.prev;
-    const next = body.next;
+    const prev = body.prevId;
+    const next = body.nextId;
     const newStar = await addStar(userId, parentId, data, prev, next);
 
     res.send(newStar);

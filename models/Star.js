@@ -10,8 +10,8 @@ const starSchema = new Schema({
   data: { type:String, required: myRequired, validation: [dataValidation, "Data is incorrect for star"] },
   index: { type: Number, required: false },
   addDisabled: { type: Boolean, default: false, required: false },
-  prev: { type:String, required: true },
-  next: { type:String, required: true }
+  prev: { type:String, required: myRequired, validation: [linkReq, "Data is incorrect for prev"] },
+  next: { type:String, required: myRequired, validation: [linkReq, "Data is incorrect for next"] }
 });
 
 function dataValidation(data) {
@@ -19,6 +19,10 @@ function dataValidation(data) {
 }
 function myRequired() {
   return !(this.data !== null && this.data !== undefined && typeof this.data === 'string');
+}
+
+function linkReq() {
+  return true;
 }
 
 mongoose.model('stars', starSchema);

@@ -25,7 +25,7 @@ const updateStar = (id, update) => async dispatch => {
 const moveStar = (starId, prevId, nextId) => async dispatch => {
   const res = await axios.put('/api/star/move', {prevId, nextId, starId});
   dispatch({ type: UPDATE_STAR, payload: res.data });
-}
+};
 
 const removeStar = (id) => async dispatch => {
   const res = await axios.delete('/api/star/remove', { data: { id }});

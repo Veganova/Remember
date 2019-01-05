@@ -37,10 +37,10 @@ function removeStar(newState, removedStar) {
 }
 
 function deleteStar(newState, removedStar) {
-  const newerState = newState.filter(star => removedStar['_id'] !== star['_id']);
-  return newerState;
+  return newState.filter(star => removedStar['_id'] !== star['_id']);
 }
 
+// If star does not exist, it will simply add
 function updateStar(state, updatedStar) {
    const newState = deleteStar(state, updatedStar)
    return addStar(newState, updatedStar);
@@ -48,6 +48,8 @@ function updateStar(state, updatedStar) {
 
 function addStar(newState, formattedStar) {
   let previousLength = newState.length;
+  console.log("before", newState);
+  // with no previous link, putting it at the front of the list is safe.
   if (formattedStar.prev === null) {
     newState.unshift(formattedStar);
   }
@@ -58,6 +60,7 @@ function addStar(newState, formattedStar) {
     }
   }
 
+  console.log("after", newState);
   if (newState.length === previousLength) {
     alert('add star reducer did not add element to state');
   }
@@ -97,7 +100,7 @@ function linkSort(stars) {
 
 // receives affected star(s) in action.payload
 export default function(state = null, action) {
-  const newState = JSON.parse(JSON.stringify(state));
+  let newState = JSON.parse(JSON.stringify(state));
   if (action.payload && action.payload.error) {
     return newState;
   }
@@ -108,17 +111,27 @@ export default function(state = null, action) {
       }
       return linkSort(action.payload);
     case ADD_STAR:
-      const arg = {};
-      const newStar = action.payload;
-      arg[newStar.parentId] = [newStar];
-      arg[newStar['_id']] = [];
+      console.log(action.payload);
+      for (let i = 0; i < action.payload.length; i++) {
+        newState = updateStar(newState, action.payload[i]);
+      }
+      newState.forEach(star => {
+        star.id = star['_id'];
+        star.focus = false
+      });
 
-      const formattedStar = constructStars(arg, newStar.parentId)[0];
-      // For newly added - the input should focus so the user can type immediately
-      newState.forEach(star=> star.focus = false);
-      formattedStar.focus = true;
-      return addStar(newState, formattedStar);
+      action.payload[action.payload.length - 1].focus = true;
+      return newState;
+      // const arg = {};
+      // const newStar = action.payload;
+      // arg[newStar.parentId] = [newStar];
+      // arg[newStar['_id']] = [];
+      //
+      // const formattedStar = constructStars(arg, newStar.parentId)[0];
+      // // For newly added - the input should focus so the user can type immediately
+      // return addStar(newState, formattedStar);
     case UPDATE_STAR:
+      console.log("update star");
       return updateStar(newState, action.payload);
     case REMOVE_STAR:
       return removeStar(newState, action.payload);
@@ -136,7 +149,7 @@ export default function(state = null, action) {
       return state;
     case CLEAR_FOCUS:
       newState.forEach(star => star.focus = false);
-      return newState
+      return newState;
     case EDIT_STAR:
       return state;
     default:

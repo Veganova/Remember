@@ -108,6 +108,11 @@ class SingleStarView extends Component {
 
   renderInput() {
     const star = this.props.star;
+
+    const prev = star.prev.substring(star.prev.length - 4, star.prev.length);
+    const next = star.next.substring(star.next.length - 4, star.next.length);
+    const id = star.id.substring(star.id.length - 4, star.id.length);
+
     if (this.props.isSelected) {
       return (
         <textarea className="form-control star-input"
@@ -115,7 +120,7 @@ class SingleStarView extends Component {
                     this.textInput = input;
                   }}
                   onChange={(e) => this.handleNoteEditChange(e, star)}
-                  value={star.data}
+                  value={prev + " ... " + id + " ... " + next + " ... " + star.data}
                   onKeyPress={this.handleKeyPress}
                   onKeyDown={this.handleKeyUp}
                   onBlur={() => this.props.selected(null)}
@@ -128,7 +133,7 @@ class SingleStarView extends Component {
                }}
                onChange={(e) => this.handleNoteEditChange(e, star)}
                type="text"
-               value={star.data}
+               value={prev + " ... " + id + " ... " + next + " ... " + star.data}
                onKeyPress={this.handleKeyPress}
                onKeyDown={this.handleKeyUp}
                onClick={this.onClickHandler}

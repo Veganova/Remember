@@ -42,6 +42,7 @@ export function constructStars(byParentId, parentId) {
 }
 
 export function formatStars(userId, unformatedData) {
+  console.log("helpers.js/formatStars");
   const allStars = unformatedData;
   const byParentId = getByParentId(allStars);
   return constructStars(byParentId, userId);
