@@ -5,6 +5,7 @@ import * as actions from '../actions';
 
 
 import Header from './Header';
+import Trial from './galaxy/Trial';
 import Landing from './Landing';
 import StarView from './stars/StarView';
 
@@ -16,6 +17,10 @@ class App extends Component {
   }
 
   render() {
+    return <Trial />;
+  }
+
+  render2() {
     return(
       <div >
         <BrowserRouter>
