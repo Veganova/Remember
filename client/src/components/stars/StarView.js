@@ -12,16 +12,16 @@ import NewTab from "./NewTab";
 import '../styles/StarView.css'
 import '../styles/SearchBar.css';
 import Logout from "./Logout";
+import NewNoteInput from "./NewNoteInput";
 
 class StarView extends Component {
 
   constructor(props) {
       super(props);
       this.nullStarId = -1;
-      this.state = {newNoteValue: '', searchTerm: '', tabIndex: 0, lastTabIndex: 0, selectedStar: this.nullStarId};
+      this.state = {searchTerm: '', tabIndex: 0, lastTabIndex: 0, selectedStar: this.nullStarId};
 
       this.displayStar = this.displayStar.bind(this);
-      this.handleNewNoteChange = this.handleNewNoteChange.bind(this);
       this.handleNewNoteSubmit = this.handleNewNoteSubmit.bind(this);
       this.onSearchBarChange = this.onSearchBarChange.bind(this);
       // this.getNextStarIndex = this.getNextStarIndex.bind(this);
@@ -67,11 +67,8 @@ class StarView extends Component {
       )
     }
 
-  handleNewNoteChange(event) {
-    this.setState({newNoteValue: event.target.value});
-  }
 
-  handleNewNoteSubmit(event, star) {
+  handleNewNoteSubmit = star => (event, value) => {
     event.preventDefault();
 
     let length = star.childStars.length;
@@ -81,9 +78,7 @@ class StarView extends Component {
     }
     console.log("abc", star);
     console.log("new submit", prev);
-    this.props.addStar(star.id, this.state.newNoteValue, prev, "");
-
-    this.setState({newNoteValue: ""});
+    this.props.addStar(star.id, value, prev, "");
   }
 
   displayChildStars() {
@@ -94,26 +89,18 @@ class StarView extends Component {
         if (star.addDisabled) {d = {'disabled': 'disabled'}}
         const result =  (
           <TabPanel className="form-group tab-pane" key={star['_id']} >
+            {/* Displays the hierarchy of notes */}
             {this.displayStarsFull(star.childStars, star)}
             <hr className="col-xs-12"/>
-              <form onSubmit={(event) => this.handleNewNoteSubmit(event, star)}>
-                <fieldset {...d}>
-
-                <div className="row search-bar-container-space">
-                  <div className="input-group col-12">
-                    <input className="form-control search-bar" placeholder="New Note" value={this.state.newNoteValue} onChange={this.handleNewNoteChange} type="text"/>
-                    <div className="input-group-append">
-                      <button className="btn btn-outline-secondary" type="submit">
-                        <i className="fa fa-plus" aria-hidden="true"/> Add
-                      </button>
-                    </div>
-                </div>
-            </div>
-                </fieldset>
-              </form>
+              <fieldset {...d}>
+                  <NewNoteInput onSubmit={this.handleNewNoteSubmit(star)} />
+              </fieldset>
               <div>
                 <div className="float-right">
-                  <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }><i className="fa fa-minus"></i> Delete All</button>
+                  <button className="btn btn-danger" onClick={()=> { this.props.removeChildren(star.id)} }>
+                    <i className="fa fa-minus"></i>
+                    Delete All
+                  </button>
                 </div>
             </div>
            </TabPanel>

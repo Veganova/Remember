@@ -23,6 +23,6 @@
     "lodash": "^4.17.10",
     "mongoose": "^5.2.6",
     "passport": "^0.4.0",
-    "passport-google-oauth20": "^1.0.0"
+    "passport-google-oauth20": "^2.0.0"
   }
 }
