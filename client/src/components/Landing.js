@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './styles/Landing.css';
+import './styles/Landing.scss';
 import { Redirect } from 'react-router-dom'
 import { connect } from 'react-redux';
 
@@ -14,7 +14,6 @@ class Landing extends Component {
           <i className="fa fa-user icon-login"/>
         </a>
       </div>
-
     );
   }
 

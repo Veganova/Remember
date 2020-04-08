@@ -2,7 +2,7 @@ const {addStar} = require('../services/stars/addStar');
 const {removeStar} = require('../services/stars/removeStar');
 const {removeChildren} = require('../services/stars/removeChildren');
 const {showStars}  = require('../services/stars/showStars');
-const {updateStar, moveStarById}  = require('../services/stars/updateStar');
+const {updateStar, updateChanges, moveStarById}  = require('../services/stars/updateStar');
 
 module.exports = (app) => {
   app.use("/api/star", (req, res, next) => {
@@ -33,6 +33,14 @@ module.exports = (app) => {
     const starId = req.body.id;
     const update = req.body.update;
     const result = await updateStar(userId, starId, update);
+    res.send(result);
+  });
+
+  app.put('/api/star/updateChanges', async (req, res) => {
+    const body = req.body;
+    const userId = req.user.id;
+    const changes = req.body.changes;
+    const result = await updateChanges(userId, changes);
     res.send(result);
   });
 

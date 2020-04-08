@@ -3,15 +3,61 @@ const Star = mongoose.model('stars');
 
 // Updates single star with the provided update json
 async function updateStar(userId, id, update) {
-  const s = await Star.findOneAndUpdate({"_id": id, userId}, update, {multi: false, new: true});
-  return s;
+  return Star.findOneAndUpdate({"_id": id, userId}, update, {multi: false, new: true});
+}
+
+// updatePayload contains current and changed versions for each star that needs to be updated.
+async function updateChanges(userId, changes) {
+  // Remove keys that were created when querying db for existing keys.
+  const changedStarIds = Object.keys(changes).filter(key => !key.includes('new_node_placeholder'));
+  const storedStars = await Star.find().where('_id').in(changedStarIds).exec();
+  // Ensure that FE and BE are in sync.
+  for (let storedStar of storedStars) {
+    let currentStar = changes[storedStar._id]['current'];
+    if (currentStar.data !== storedStar.data
+        || currentStar.prev !== storedStar.prev
+        || currentStar.next !== storedStar.next
+        || currentStar.parentId !== storedStar.parentId) {
+      return { "error": "Input payload representing current elements is out of sync with data stored in table", currentStar, storedStar}
+    }
+  }
+
+  // Perform updates on given stars.
+  const results = {};
+  const addChanges = Object.keys(changes).filter(starId => changes[starId]["operation"] === 'add');
+  for (const addChangeStarId of addChanges) {
+    const change = changes[addChangeStarId];
+    await new Promise(r => setTimeout(r, 2000));
+    change["saved"] = await new Star({userId, ...change["changed"]}).save();
+    results[addChangeStarId] = change;
+  }
+
+  const updateChanges = Object.keys(changes).filter(starId => changes[starId]["operation"] === 'update');
+  for (const updateChangeStarId of updateChanges) {
+    const change = changes[updateChangeStarId];
+    for (const [ changedField, changedValue ] of Object.entries(change["changed"])) {
+      if (["prev", "next", "parentId"].includes(changedField) && changedValue.includes("new_node_placeholder")) {
+        // Look through already added values to replace the placeholder with the DB generated id.
+        change["changed"][changedField] = results[changedValue]["saved"]._id;
+      }
+    }
+    change["saved"] = await Star.findOneAndUpdate({"_id": updateChangeStarId, userId}, change["changed"], {multi: false, new: true});
+    results[updateChangeStarId] = change;
+  }
+
+  const removeChanges = Object.keys(changes).filter(starId => changes[starId]["operation"] === 'delete');
+  for (const removeChangeStarId of removeChanges) {
+    const change = changes[removeChangeStarId];
+    change["saved"] = await Star.remove({"_id": removeChangeStarId, userId});
+  }
+
+  return results;
 }
 
 
 async function moveStarById(userId, prevId, nextId, starId) {
   const star = await Star.findOne({userId, '_id': starId});
-  const rv  = await moveStar(userId, prevId, nextId, star);
-  return rv;
+  return moveStar(userId, prevId, nextId, star);
 }
 
 /**
@@ -52,8 +98,7 @@ async function moveStar(userId, prevId, nextId, star) {
   // let rv = await Star.find({userId, "_id": starId}).update({$set: {prev: prevId, next: nextId}});
   // // bulk.execute();
   // return rv;
-  // return new Promise((resolve, reject) => bulk.execute((x) => resolve(x)));
 }
 
 
-module.exports = {updateStar, moveStar, moveStarById};
+module.exports = {updateStar, updateChanges, moveStar, moveStarById};

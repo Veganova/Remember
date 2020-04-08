@@ -1,8 +1,8 @@
 import _ from 'lodash';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import * as actions from '../../actions';
-import '../styles/SingleStarView.css';
+import * as actions from '../../actions/starActions';
+import '../styles/SingleStarView.scss';
 
 class SingleStarView extends Component {
 
@@ -19,7 +19,7 @@ class SingleStarView extends Component {
     this.updateStar = _.debounce(this.props.editStar, 500);
 
     this.doneTypingUpdate = 1500;
-    this.typingTimer, this.clickTimeout;
+    // this.typingTimer; this.clickTimeout;
 
     this.clicks = 0;
   }
@@ -67,7 +67,7 @@ class SingleStarView extends Component {
 
     if (e.keyCode === 8) {
       if (this.props.star.data === '') {
-        this.props.removeStar(this.props.star.id);
+        this.props.removeStar(this.props.stars, this.props.star.id);
       }
     } else if (e.keyCode === 38) {
       // UP arrow
@@ -108,9 +108,8 @@ class SingleStarView extends Component {
 
   renderInput() {
     const star = this.props.star;
-
-    const prev = star.prev.substring(star.prev.length - 4, star.prev.length);
-    const next = star.next.substring(star.next.length - 4, star.next.length);
+    const prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
+    const next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
     const id = star.id.substring(star.id.length - 4, star.id.length);
 
     if (this.props.isSelected) {
@@ -155,7 +154,7 @@ class SingleStarView extends Component {
               {this.renderInput()}
               <div className="input-group-append">
                   <span className="input-group-text star-remove">
-                    <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(star.id)}/>
+                    <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(this.props.stars, star.id)}/>
                   </span>
               </div>
             </div>

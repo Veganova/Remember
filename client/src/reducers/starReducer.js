@@ -1,8 +1,27 @@
-import {GET_STARS, ADD_STAR, UPDATE_STAR, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
+import {GET_STARS, ADD_STAR, UPDATE_STAR, UPDATE_STARS, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, UPDATE_LOCAL_STARS, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
 import { constructStars } from '../helpers.js';
 import {getById} from "../helpers";
 
 
+
+function updateStarByChange(stars, targetStar, change) {
+  if (change["operation"] === "update") {
+    for (const changedKey in change["changed"]) {
+      targetStar[changedKey] = change["changed"][changedKey];
+    }
+    return stars;
+  } else if (change["operation"] === "delete") {
+    return deleteStar(stars, targetStar);
+  } else if (change["operation"] === "add") {
+    if (!("saved" in change)) {
+      // ID generation is left to backend. Will not create any stars locally
+      throw 'Add operation not implemented for updating local state ' + JSON.stringify(change);
+    }
+    stars.push(change["saved"]);
+    return stars;
+  }
+  throw 'No such operation ' + JSON.stringify(change);
+}
 
 // Function handles moving stars to trash and permentantly deletion
 function removeStar(newState, removedStar) {
@@ -36,9 +55,9 @@ function removeStar(newState, removedStar) {
   return updateStar(newState, removedStar);
 }
 
-function deleteStar(newState, removedStar) {
-  return newState.filter(star => removedStar['_id'] !== star['_id']);
-}
+  function deleteStar(newState, removedStar) {
+    return newState.filter(star => removedStar['_id'] !== star['_id']);
+  }
 
 // If star does not exist, it will simply add
 function updateStar(state, updatedStar) {
@@ -88,7 +107,6 @@ function linkSort(stars) {
     let curStar = stack.pop();
 
     result.push(curStar);
-
     if (curStar.next) {
       // Next id not null
       stack.push(byId[curStar.next]);
@@ -109,6 +127,7 @@ export default function(state = null, action) {
       if (!action.payload) {
         return [];
       }
+      console.log(action.payload);
       return linkSort(action.payload);
     case ADD_STAR:
       console.log(action.payload);
@@ -133,6 +152,12 @@ export default function(state = null, action) {
     case UPDATE_STAR:
       console.log("update star");
       return updateStar(newState, action.payload);
+    case UPDATE_STARS:
+      console.log("update stars", action.payload);
+      // for (let star in action.payload) {
+      //   newState = updateStar(newState, star);
+      // }
+      return newState;
     case REMOVE_STAR:
       return removeStar(newState, action.payload);
     case REMOVE_CHILDREN:
@@ -147,6 +172,17 @@ export default function(state = null, action) {
       alert("Update local star failed to find a star with id " + action.payload.id);
       // error message
       return state;
+    case UPDATE_LOCAL_STARS:
+      let byId = getById(newState);
+      const { changes } = action.payload;
+      console.log(changes);
+      for (let changedStarId in changes) {
+        const change = changes[changedStarId];
+        const targetStar = byId[changedStarId];
+        console.log("Applying change ", change);
+        newState = updateStarByChange(newState, targetStar, change);
+      }
+      return linkSort(newState);
     case CLEAR_FOCUS:
       newState.forEach(star => star.focus = false);
       return newState;

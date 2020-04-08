@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Tab } from 'react-tabs';
 import { connect } from 'react-redux'
-import * as actions from "../../actions";
+import * as actions from "../../actions/starActions";
 
 class NewTab extends Component {
 

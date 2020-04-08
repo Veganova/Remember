@@ -7,8 +7,6 @@ module.exports = {
   "addStar": async (userId, parentId, data, prev, next, addDisabled) => {
     addDisabled = Boolean(addDisabled);
 
-
-
     if (parentId === userId) {
       // Top level user star only
     }

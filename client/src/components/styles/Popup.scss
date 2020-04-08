@@ -1,0 +1,52 @@
+@import "variables";
+
+.popupContainer {
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+.popup {
+    text-align: center;
+    border: black 1px solid;
+    border-radius: 50px;
+    height: 50px;
+    padding: 13px;
+    margin-bottom: 6px;
+    background: $secondary-bg;
+    color: $primary-text;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.popupIndividual {
+    max-width: 200px;
+    transition: 0.5s ease-in-out;
+    &:after{
+        color: red;
+    }
+    .fa {
+        font-size:14px;
+    }
+}
+
+.popupIndividual:hover {
+    max-width: 1000px;
+}
+
+.popupRed {
+
+}
+
+.popupOrange {
+
+}
+.popupGray {
+
+}
+//todo add animation to last element of list.

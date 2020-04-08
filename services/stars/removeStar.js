@@ -32,7 +32,7 @@ async function removeStar(userId, starId) {
   }
   const update = {parentId: trashStar.id};
   const options = {multi: false, new: true};
-  return await Star.findOneAndUpdate({"_id": starId, "userId": userId}, update, options);
+  return Star.findOneAndUpdate({"_id": starId, "userId": userId}, update, options);
 }
 
 module.exports = {removeStar};
