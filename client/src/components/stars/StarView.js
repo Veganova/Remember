@@ -77,10 +77,15 @@ class StarView extends Component {
 
   handleNewNoteSubmit = star => (event, value) => {
     event.preventDefault();
-    this.props.addPopup("Couldn't add note: " + value, POPUP_TYPE.ERROR);
-    // if (!(this.props.addStar(this.props.star, value, star.id, true, null))) {
-    //   this.props.addPopup("Couldn't add star", POPUP_TYPE.ERROR);
-    // }
+
+    if (this.props.lock.length > 0) {
+      console.log(this.props.lock);
+      this.props.addPopup("Couldn't add note: " + value, POPUP_TYPE.ERROR);
+      return false;
+    } else {
+      this.props.addStar(this.props.star, value, star.id, true, null);
+    }
+    return true;
   };
 
   displayChildStars() {
@@ -104,7 +109,7 @@ class StarView extends Component {
                       <button className="btn btn-danger" onClick={() => {
                         this.props.removeChildren(star.id)
                       }}>
-                        <i className="fa fa-minus"></i>
+                        <i className="fa fa-minus"/>
                         Delete All
                       </button>
                     </div>
@@ -264,8 +269,8 @@ class StarView extends Component {
   }
 }
 
-function mapStateToProps({auth, star, sync}) {
-  return {auth, star, sync};
+function mapStateToProps({auth, star, sync, lock}) {
+  return {auth, star, sync, lock};
 }
 
 export default connect(mapStateToProps, {...starActions, addPopup})(StarView);

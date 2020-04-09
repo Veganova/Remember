@@ -56,7 +56,9 @@ class SingleStarView extends Component {
       // const nextStarIndex = this.props.getNextStarIndex(this.props.star);
       // const newIndex = (this.props.star.index + nextStarIndex) / 2;
 
-      this.props.addStar(this.props.star.parentId, "", this.props.star.id, this.props.star.next);
+      console.log(this.props.star);
+
+      this.props.addStar(this.props.stars, this.props.star.parentId, "", this.props.star.id, this.props.star.next);
     }
 
   }

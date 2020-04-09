@@ -11,10 +11,10 @@ import {
   UPDATE_LOCAL_STAR,
   UPDATE_LOCAL_STARS,
   CLEAR_FOCUS,
-  EDIT_STAR
+  EDIT_STAR,
+  ADD_LOCK,
+  REMOVE_LOCK
 } from './types';
-
-let haltUpdates = false;
 
 const fetchUser = () => async dispatch => {
   const res = await axios.get('/api/current_user');
@@ -27,27 +27,17 @@ const getStars = () => async dispatch => {
 };
 
 const update = (dispatch, changes) => {
-  if (!haltUpdates) {
-    dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
-    return true;
-  } else {
-    console.log("Denied update", changes);
-  }
-  return false;
+  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
 };
 
 const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
   const changes = getAddStarChanges(stars, data, parentId, prevId, nextId);
-  if (haltUpdates) {
-    console.log("Denied update", changes);
-    return false;
-  }
+  dispatch({type: ADD_LOCK, payload: {changes}});
   // No new change calls are permitted while add request is made. Test this.
-  haltUpdates = true;
   const res = await axios.put('/api/star/updateChanges', {changes});
-  haltUpdates = false;
   update(dispatch, res.data);
-};
+  dispatch({type: REMOVE_LOCK, payload: {changes}});
+}
 
 const updateStar = (id, update) => async dispatch => {
   const res = await axios.put('/api/star/update', {id, update});
@@ -65,11 +55,7 @@ const updateStar = (id, update) => async dispatch => {
 const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispatch => {
   const changes = getMoveStarChanges(stars, toMoveStarId, parentId, prevId, nextId);
   console.log(changes);
-  if (update(dispatch, changes)) {
-    // update
-  } else {
-    return false;
-  }
+  update(dispatch, changes)
   // dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
   // const res = await axios.put('/api/star/move', {prevId, nextId, starId});
   // dispatch({type: UPDATE_STAR, payload: res.data});
@@ -78,11 +64,7 @@ const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispat
 const removeStar = (stars, id) => async dispatch => {
   console.log(stars);
   const changes = getRemoveStarChanges(stars, id);
-  if (update(dispatch, changes)) {
-    // do rest
-  } else {
-    return false;
-  }
+  update(dispatch, changes)
   // dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
   // const res = await axios.delete('/api/star/remove', {data: {id}});
   // dispatch({type: REMOVE_STAR, payload: res.data});

@@ -14,8 +14,10 @@ export default class NewNoteInput extends React.Component {
   };
 
   handleOnSubmit = (event) => {
-    this.props.onSubmit(event, this.state.newNoteValue);
-    this.setState({newNoteValue: ""})
+    if (this.props.onSubmit(event, this.state.newNoteValue)) {
+      // submit was successful, clear out input field
+      this.setState({newNoteValue: ""})
+    }
   };
 
   render() {

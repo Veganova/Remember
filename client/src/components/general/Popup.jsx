@@ -46,7 +46,7 @@ class PopupList extends React.Component {
       // New popup added
       for (let newPopupIndex = prevProps.popups.length; newPopupIndex < this.props.popups.length; newPopupIndex++) {
         const removalPopup = this.props.popups[newPopupIndex]
-        setTimeout(() => this.props.removePopup(removalPopup), 15000);
+        setTimeout(() => this.props.removePopup(removalPopup), 8000);
       }
     }
   }
@@ -54,7 +54,7 @@ class PopupList extends React.Component {
   renderSinglePopup = (popup, index) => {
     const {popupType, message} = popup;
     return <Popup key={index} popupType={popupType} message={message} handleOnRemove={() => this.props.removePopup(popup)}/>;
-  }
+  };
 
   render() {
     if (this.props.popups.length === 0) {

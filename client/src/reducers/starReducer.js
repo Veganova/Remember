@@ -130,7 +130,6 @@ export default function(state = null, action) {
       console.log(action.payload);
       return linkSort(action.payload);
     case ADD_STAR:
-      console.log(action.payload);
       for (let i = 0; i < action.payload.length; i++) {
         newState = updateStar(newState, action.payload[i]);
       }
@@ -150,10 +149,8 @@ export default function(state = null, action) {
       // // For newly added - the input should focus so the user can type immediately
       // return addStar(newState, formattedStar);
     case UPDATE_STAR:
-      console.log("update star");
       return updateStar(newState, action.payload);
     case UPDATE_STARS:
-      console.log("update stars", action.payload);
       // for (let star in action.payload) {
       //   newState = updateStar(newState, star);
       // }
@@ -175,11 +172,9 @@ export default function(state = null, action) {
     case UPDATE_LOCAL_STARS:
       let byId = getById(newState);
       const { changes } = action.payload;
-      console.log(changes);
       for (let changedStarId in changes) {
         const change = changes[changedStarId];
         const targetStar = byId[changedStarId];
-        console.log("Applying change ", change);
         newState = updateStarByChange(newState, targetStar, change);
       }
       return linkSort(newState);
