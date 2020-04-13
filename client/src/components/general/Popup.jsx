@@ -49,7 +49,7 @@ class PopupList extends React.Component {
       // New popup added
       for (let newPopupIndex = prevProps.popups.length; newPopupIndex < this.props.popups.length; newPopupIndex++) {
         const removalPopup = this.props.popups[newPopupIndex]
-        setTimeout(() => this.props.removePopup(removalPopup), 800000);
+        setTimeout(() => this.props.removePopup(removalPopup), 8000);
       }
     }
   }

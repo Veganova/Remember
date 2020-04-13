@@ -1,4 +1,4 @@
-import {GET_STARS, ADD_STAR, UPDATE_STAR, UPDATE_STARS, REMOVE_STAR, REMOVE_CHILDREN, UPDATE_LOCAL_STAR, UPDATE_LOCAL_STARS, CLEAR_FOCUS, EDIT_STAR } from '../actions/types'
+import {GET_STARS, REMOVE_CHILDREN, UPDATE_LOCAL_STARS, CLEAR_FOCUS } from '../actions/types'
 import { constructStars } from '../helpers.js';
 import {getById} from "../helpers";
 
@@ -83,7 +83,6 @@ function updateStar(state, updatedStar) {
 
 function addStar(newState, formattedStar) {
   let previousLength = newState.length;
-  console.log("before", newState);
   // with no previous link, putting it at the front of the list is safe.
   if (formattedStar.prev === null) {
     newState.unshift(formattedStar);
@@ -95,7 +94,6 @@ function addStar(newState, formattedStar) {
     }
   }
 
-  console.log("after", newState);
   if (newState.length === previousLength) {
     alert('add star reducer did not add element to state');
   }
@@ -145,45 +143,8 @@ export default function(state = null, action) {
       }
       console.log(action.payload);
       return linkSort(action.payload);
-    case ADD_STAR:
-      for (let i = 0; i < action.payload.length; i++) {
-        newState = updateStar(newState, action.payload[i]);
-      }
-      newState.forEach(star => {
-        star.focus = false
-      });
-
-      action.payload[action.payload.length - 1].focus = true;
-      return newState;
-      // const arg = {};
-      // const newStar = action.payload;
-      // arg[newStar.parentId] = [newStar];
-      // arg[newStar['_id']] = [];
-      //
-      // const formattedStar = constructStars(arg, newStar.parentId)[0];
-      // // For newly added - the input should focus so the user can type immediately
-      // return addStar(newState, formattedStar);
-    case UPDATE_STAR:
-      return updateStar(newState, action.payload);
-    case UPDATE_STARS:
-      // for (let star in action.payload) {
-      //   newState = updateStar(newState, star);
-      // }
-      return newState;
-    case REMOVE_STAR:
-      return removeStar(newState, action.payload);
     case REMOVE_CHILDREN:
       return removeStar(newState, action.payload);
-    case UPDATE_LOCAL_STAR:
-      for (let i = 0; i < newState.length; i++) {
-        if (newState[i]['_id'] === action.payload.star._id) {
-          newState[i].data = action.payload.data;
-          return newState;
-        }
-      }
-      alert("Update local star failed to find a star with id " + action.payload._id);
-      // error message
-      return state;
     case UPDATE_LOCAL_STARS:
       let byId = getById(newState);
       const { changes } = action.payload;
@@ -205,8 +166,6 @@ export default function(state = null, action) {
     case CLEAR_FOCUS:
       newState.forEach(star => star.focus = false);
       return newState;
-    case EDIT_STAR:
-      return state;
     default:
       return state;
   }

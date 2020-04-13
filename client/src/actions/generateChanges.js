@@ -138,12 +138,22 @@ const getAddStarChanges = (stars, data, parentId, prevId, nextId, byIdMap = null
   return changes;
 };
 
+const isNestedInTrash = (star, trashStarId, byIdMap) => {
+  if (star.parentId === star.userId) {
+    return false;
+  }
+  if (star.parentId === trashStarId) {
+    return true;
+  }
+  return isNestedInTrash(byIdMap[star.parentId], trashStarId, byIdMap);
+};
+
 const getRemoveStarChanges = (stars, toRemoveStarId, byIdMap = null) => {
   byIdMap = byIdMap || getById(stars);
   const toRemoveStar = byIdMap[toRemoveStarId];
   const trashStar = getTrashStar(stars);
   let changes = {};
-  if (toRemoveStar.parentId === trashStar['_id']) {
+  if (isNestedInTrash(toRemoveStar, trashStar._id, byIdMap)) {
     // Already in trash, must delete
     changes = moveFirstPart(stars, toRemoveStar, byIdMap);
     changes[toRemoveStar['_id']] = {operation: 'delete', current: toRemoveStar};

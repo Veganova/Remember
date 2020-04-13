@@ -69,6 +69,12 @@ class StarView extends Component {
     return true;
   };
 
+  moveStar = (starId, parentId, prevId, nextId) => {
+    if (this.checkLock()) {
+      this.props.moveStar(this.props.star, starId, parentId, prevId, nextId);
+    }
+  }
+
 
   editStar = (starId, edits) => {
     if (this.checkLock()) {
@@ -177,7 +183,7 @@ class StarView extends Component {
               }
 
               // update database
-              this.props.moveStar(this.props.star, updatedItem._id, newParentOfMovedStar._id, prevNeighbor, nextNeighbor);
+             this.moveStar(updatedItem._id, newParentOfMovedStar._id, prevNeighbor, nextNeighbor);
             }}
         />
     )
@@ -221,19 +227,25 @@ class StarView extends Component {
   }
 
   displaySyncStatus() {
-    if (_.isEmpty(this.props.sync)) {
-      return (
-          <div className="">
-            <span className="badge badge-pill badge-success synced">Synced</span>
-          </div>
-      );
-    } else {
-      return (
-          <div className="">
-            <span className="badge badge-pill badge-danger synced">Changes Made</span>
-          </div>
-      );
-    }
+    return (
+        <div className="">
+          <span className="badge badge-pill badge-success synced">Synced</span>
+        </div>
+    );
+    // TODO revisit when undo stack has been implemented.
+    // if (_.isEmpty(this.props.sync)) {
+    //   return (
+    //       <div className="">
+    //         <span className="badge badge-pill badge-success synced">Synced</span>
+    //       </div>
+    //   );
+    // } else {
+    //   return (
+    //       <div className="">
+    //         <span className="badge badge-pill badge-danger synced">Changes Made</span>
+    //       </div>
+    //   );
+    // }
   }
 
   onSearchBarChange(e) {
@@ -259,7 +271,6 @@ class StarView extends Component {
   render() {
     if (this.props.star && this.props.auth) {
       this.formattedStars = [];
-      this.isLocked = this.props.lock.length > 0;
       if (!this.state.searchTerm) {
         this.formattedStars = formatStars(this.props.auth["_id"], this.props.star);
       } else {
