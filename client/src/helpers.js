@@ -33,7 +33,7 @@ export function constructStars(byParentId, parentId) {
   parentStars.forEach((parentStar) => {
     const childStars = constructStars(byParentId, parentStar['_id']);
     const copy = JSON.parse(JSON.stringify(parentStar));
-    copy.id = copy["_id"];
+    copy.id = copy['_id'];
     copy.childStars = childStars;
     stars.push(copy);
   });
@@ -103,7 +103,7 @@ export function _searchAndFormatStars(searchTerm, unformatedData) {
 }
 
 function markFormattedStars(star, searchResult, acc) {
-  if (searchResult.filter(cur => cur["_id"] === star.id).length > 0) {
+  if (searchResult.filter(cur => cur["_id"] === star._id).length > 0) {
     acc.push(star);
     return;
   }

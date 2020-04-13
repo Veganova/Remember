@@ -1,5 +1,7 @@
 import axios from 'axios';
-import {getRemoveStarChanges, getMoveStarChanges, getAddStarChanges} from './generateChanges';
+import {POPUP_TYPE} from "../components/general/Popup";
+import _ from "lodash";
+import {getRemoveStarChanges, getMoveStarChanges, getAddStarChanges, getEditStarChanges} from './generateChanges';
 import {
   FETCH_USER,
   GET_STARS,
@@ -13,7 +15,8 @@ import {
   CLEAR_FOCUS,
   EDIT_STAR,
   ADD_LOCK,
-  REMOVE_LOCK
+  REMOVE_LOCK,
+  ADD_POPUP
 } from './types';
 
 const fetchUser = () => async dispatch => {
@@ -26,48 +29,50 @@ const getStars = () => async dispatch => {
   dispatch({type: GET_STARS, payload: res.data});
 };
 
-const update = (dispatch, changes) => {
-  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+// Returns false when the BE response is invvalid and contain errors. Also triggers a popup which will show in the UI to the user.
+const updateRemoteAndCheck = async (dispatch, changes) => {
+  const res = await axios.put('/api/star/updateChanges', {changes});
+  if (res.data.error) {
+    console.error(res);
+    dispatch({
+      type: ADD_POPUP,
+      payload: {message: `Service error: ${res.data.error.message}`, popupType: POPUP_TYPE.ERROR}
+    });
+    return false;
+  }
+
+  return res;
 };
 
 const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
   const changes = getAddStarChanges(stars, data, parentId, prevId, nextId);
-  dispatch({type: ADD_LOCK, payload: {changes}});
   // No new change calls are permitted while add request is made. Test this.
-  const res = await axios.put('/api/star/updateChanges', {changes});
-  update(dispatch, res.data);
-  dispatch({type: REMOVE_LOCK, payload: {changes}});
-}
-
-const updateStar = (id, update) => async dispatch => {
-  const res = await axios.put('/api/star/update', {id, update});
-  dispatch({type: UPDATE_STAR, payload: res.data});
+  dispatch({type: ADD_LOCK, payload: {changes}});
+  const res = await updateRemoteAndCheck(dispatch, changes);
+  if (res) {
+    dispatch({type: UPDATE_LOCAL_STARS, payload: {changes: res.data}});
+    dispatch({type: REMOVE_LOCK, payload: {changes}});
+  }
 };
-
-// const updateStars = (currentStars, changedStars) => async dispatch => {
-//
-//   dispatch({type: UPDATE_LOCAL_STARS, payload: {changedStars}})
-//   const res = await axios.put('/api/star/updateStars', {data: {currentStars, changedStars}});
-//   dispatch({type: UPDATE_STARS, payload: res.data})
-// };
 
 // prev and next are the new ids
 const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispatch => {
   const changes = getMoveStarChanges(stars, toMoveStarId, parentId, prevId, nextId);
-  console.log(changes);
-  update(dispatch, changes)
-  // dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
-  // const res = await axios.put('/api/star/move', {prevId, nextId, starId});
-  // dispatch({type: UPDATE_STAR, payload: res.data});
+  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateRemoteAndCheck(dispatch, changes);
 };
 
 const removeStar = (stars, id) => async dispatch => {
-  console.log(stars);
   const changes = getRemoveStarChanges(stars, id);
-  update(dispatch, changes)
-  // dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
-  // const res = await axios.delete('/api/star/remove', {data: {id}});
-  // dispatch({type: REMOVE_STAR, payload: res.data});
+  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateRemoteAndCheck(dispatch, changes);
+};
+
+const editStarRemote = _.debounce(updateRemoteAndCheck, 500);
+const editStar = (stars, id, edits) => async dispatch => {
+  const changes = getEditStarChanges(stars, id, edits);
+  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  editStarRemote(dispatch, changes);
 };
 
 // uses parentId to check if it resides in the Trash (which would permanently delete it)
@@ -76,17 +81,18 @@ const removeChildren = (parentId) => async dispatch => {
   dispatch({type: REMOVE_CHILDREN, payload: res.data});
 };
 
+const updateStar = (id, update) => async dispatch => {
+  const res = await axios.put('/api/star/update', {id, update});
+  dispatch({type: UPDATE_STAR, payload: res.data});
+};
+
+
 const updateLocalStar = (star, data) => dispatch => {
   dispatch({type: UPDATE_LOCAL_STAR, payload: {star, data}});
 };
 
 const clearFocus = () => dispatch => {
   dispatch({type: CLEAR_FOCUS, payload: {}});
-};
-
-const editStar = (id, update) => async dispatch => {
-  const res = await axios.put('/api/star/update', {id, update});
-  dispatch({type: EDIT_STAR, payload: res.data});
 };
 
 export {

@@ -28,17 +28,17 @@ export default function(state = {}, action) {
       }
       return newState;
     case UPDATE_LOCAL_STAR:
-      if (!newState[action.payload.star.id]) {
-        newState[action.payload.star.id] = {
+      if (!newState[action.payload.star._id]) {
+        newState[action.payload.star._id] = {
           "oldData": action.payload.star.data,
           "newData": action.payload.data
         }
-      } else if (newState[action.payload.star.id]["oldData"] === action.payload.data) {
-        if (newState[action.payload.star.id]) {
-          delete newState[action.payload.star.id];
+      } else if (newState[action.payload.star._id]["oldData"] === action.payload.data) {
+        if (newState[action.payload.star._id]) {
+          delete newState[action.payload.star._id];
         }
       } else {
-        newState[action.payload.star.id].newData = action.payload.data;
+        newState[action.payload.star._id].newData = action.payload.data;
       }
       return newState;
     case CLEAR_FOCUS:

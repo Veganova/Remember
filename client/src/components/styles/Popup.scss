@@ -1,8 +1,11 @@
 @import "variables";
+$popup-height: 50px;
+$popup-count-height: 22px;
 
 .popupContainer {
+    pointer-events: none;
     width: 100%;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     display: flex;
     justify-content: center;
@@ -12,17 +15,41 @@
 }
 
 .popup {
-    text-align: center;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
     border: black 1px solid;
-    border-radius: 50px;
-    height: 50px;
+    border-radius: $popup-height;
+    height: $popup-height;
     padding: 13px;
+    margin-right: -13px;
     margin-bottom: 6px;
     background: $secondary-bg;
     color: $primary-text;
+    line-height: $popup-count-height;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    box-sizing: border-box;
+
+    .delete {
+        min-height: 1.15em;
+        min-width: 1.15em;
+    }
+
+    .popupCount {
+        background: $primary-text;
+        color: $secondary-bg;
+        border-radius: 50%;
+        min-height: $popup-count-height;
+        min-width: $popup-count-height;
+        font-size: 12px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 4px;
+    }
 }
 
 .popupIndividual {
@@ -38,13 +65,16 @@
 }
 
 .popupRed {
-
+    border-color: #ef0000;
+    border-width: 2.5px;
 }
 
 .popupOrange {
-
+    border-color: #ef9800;
+    border-width: 2.5px;
 }
 .popupGray {
-
+    border-color: #a7a7a7;
+    border-width: 2.5px;
 }
 //todo add animation to last element of list.

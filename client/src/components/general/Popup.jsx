@@ -18,15 +18,18 @@ class Popup extends React.Component {
     }
   }
 
+  //TODO  http://reactcommunity.org/react-transition-group/transition
   render () {
-    const {popupType, message} = this.props;
+    const {popupType, message, count} = this.props;
     const typeClass = this._getTypeClass(popupType);
+    const renderedCount = count > 1 && <span className="popupCount">{count}</span>;
     return (
         <div className="popupIndividual">
           <div className={`popup  ${typeClass}`}>
+            {renderedCount}
             {message}
             <svg onClick={() => this.props.handleOnRemove()}
-                 className="bi bi-x" width="1.15em" height="1.15em" viewBox="0 0 16 16" fill="currentColor"
+                 className="delete bi bi-x" width="1.15em" height="1.15em" viewBox="0 0 16 16" fill="currentColor"
                  xmlns="http://www.w3.org/2000/svg">
               <path fillRule="evenodd" d="M11.854 4.146a.5.5 0 010 .708l-7 7a.5.5 0 01-.708-.708l7-7a.5.5 0 01.708 0z"
                     clipRule="evenodd"/>
@@ -46,14 +49,14 @@ class PopupList extends React.Component {
       // New popup added
       for (let newPopupIndex = prevProps.popups.length; newPopupIndex < this.props.popups.length; newPopupIndex++) {
         const removalPopup = this.props.popups[newPopupIndex]
-        setTimeout(() => this.props.removePopup(removalPopup), 8000);
+        setTimeout(() => this.props.removePopup(removalPopup), 800000);
       }
     }
   }
 
   renderSinglePopup = (popup, index) => {
-    const {popupType, message} = popup;
-    return <Popup key={index} popupType={popupType} message={message} handleOnRemove={() => this.props.removePopup(popup)}/>;
+    const {popupType, message, count} = popup;
+    return <Popup key={index} popupType={popupType} message={message} count={count} handleOnRemove={() => this.props.removePopup(popup)}/>;
   };
 
   render() {

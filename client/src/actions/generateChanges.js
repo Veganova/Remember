@@ -61,7 +61,12 @@ const moveSecondPart = (stars, toMoveStar, parentId, prevId, nextId, byIdMap) =>
   if (!prevId && !nextId) {
     // Ensure that no children exist under parent
     if (stars.filter(star => star.parentId === parentId).length > 0) {
-      throw "addStar given star without prev/next under a parent that has children " + JSON.stringify({toMoveStar, parentId, prevId, nextId});
+      throw "addStar given star without prev/next under a parent that has children " + JSON.stringify({
+        toMoveStar,
+        parentId,
+        prevId,
+        nextId
+      });
     }
   } else if (!prevId && nextId === true) {
     nextId = null;
@@ -156,10 +161,29 @@ const getMoveStarChanges = (stars, toMoveStarId, parentId, prevId, nextId, byIdM
   byIdMap = byIdMap || getById(stars);
   const toMoveStar = byIdMap[toMoveStarId];
   // combine changes from both steps
-  return _.merge(
+  const changes = _.merge(
       moveFirstPart(stars, toMoveStar, byIdMap),
       moveSecondPart(stars, toMoveStar, parentId, prevId, nextId, byIdMap)
   );
+  changes[toMoveStarId]['changed'].focus = true;
+  return changes;
 };
 
-export {getMoveStarChanges, getRemoveStarChanges, getAddStarChanges};
+const getEditStarChanges = (stars, toEditStarId, edits, byIdMap = null) => {
+  byIdMap = byIdMap || getById(stars);
+  const toEditStar = byIdMap[toEditStarId];
+
+  return {
+    [toEditStarId]: {
+      operation: "update",
+      current: toEditStar,
+      changed: {
+        ...edits
+      },
+      // Mark change as 'simple' if provided edits only change the 'data' field.
+      isSimpleEdit: (Object.keys(edits).length === 1 && "data" in edits)
+    }
+  }
+}
+
+export {getMoveStarChanges, getRemoveStarChanges, getAddStarChanges, getEditStarChanges};

@@ -9,18 +9,6 @@ class SingleStarView extends Component {
   constructor(props) {
     super(props);
 
-    this.handleNoteEditSubmit = this.handleNoteEditSubmit.bind(this);
-    this.handleNoteEditChange = this.handleNoteEditChange.bind(this);
-    this.onClickHandler = this.onClickHandler.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleKeyUp = this.handleKeyUp.bind(this);
-    this.doneTyping = this.doneTyping.bind(this);
-
-    this.updateStar = _.debounce(this.props.editStar, 500);
-
-    this.doneTypingUpdate = 1500;
-    // this.typingTimer; this.clickTimeout;
-
     this.clicks = 0;
   }
 
@@ -32,7 +20,7 @@ class SingleStarView extends Component {
     this.focusInput()
   }
 
-  focusInput() {
+  focusInput = () => {
     if (this.props.star.focus) {
       this.textInput.focus();
       this.props.clearFocus();
@@ -42,34 +30,21 @@ class SingleStarView extends Component {
     }
   }
 
-  doneTyping() {
-    const star = this.props.star;
-    this.props.updateStar(star.id, star.data);
-  }
-
-  handleNoteEditSubmit(event) {
+  handleNoteEditSubmit = (event) => {
     event.preventDefault();
+    console.log("submitted singlestarview form")
   }
 
-  handleKeyPress(e) {
+  handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      // const nextStarIndex = this.props.getNextStarIndex(this.props.star);
-      // const newIndex = (this.props.star.index + nextStarIndex) / 2;
-
-      console.log(this.props.star);
-
-      this.props.addStar(this.props.stars, this.props.star.parentId, "", this.props.star.id, this.props.star.next);
+      this.props.onAddNewNote(this.props.star.parentId, this.props.star._id, this.props.star.next)(e, "");
     }
-
   }
 
-  handleKeyUp(e) {
-    clearTimeout(this.typingTimer);
-    this.typingTimer = setTimeout(this.doneTyping, this.doneTypingUpdate);
-
+  handleKeyUp = (e) => {
     if (e.keyCode === 8) {
       if (this.props.star.data === '') {
-        this.props.removeStar(this.props.stars, this.props.star.id);
+        this.props.onRemove(this.props.star._id);
       }
     } else if (e.keyCode === 38) {
       // UP arrow
@@ -81,18 +56,18 @@ class SingleStarView extends Component {
   }
 
 
-  handleNoteEditChange(event, star) {
+  handleNoteEditChange = (event, star) => {
     const data = event.target.value;
 
     // Need to update locally. Fuse seems to break when this.state is used in the input instead of this.props.
     // Unsure why but consitently broke the search switching to state. thus using redux to populate this.props.star on keytype.
-    this.props.updateLocalStar(star, data);
-    this.updateStar(star.id, {data});
+    console.log(data);
+    this.props.onEdit(star._id, {data});
   }
 
   // set this on <input> for Nestable to no longer be able to drag by input onMouseDown={this.onClickHandler}
 
-  onClickHandler() {
+  onClickHandler = () => {
     let resetClick = () => {
       this.clicks = 0
     }
@@ -110,9 +85,12 @@ class SingleStarView extends Component {
 
   renderInput() {
     const star = this.props.star;
-    const prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
-    const next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
-    const id = star.id.substring(star.id.length - 4, star.id.length);
+    let prev, next, id, parentId;
+    parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
+    prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
+    next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
+    id = star._id.substring(star._id.length - 4, star._id.length);
+    const meta = prev && next && id ? parentId + ' | ' +  prev + " ... " + id + " ... " + next + " ... " : "";
 
     if (this.props.isSelected) {
       return (
@@ -121,7 +99,7 @@ class SingleStarView extends Component {
                     this.textInput = input;
                   }}
                   onChange={(e) => this.handleNoteEditChange(e, star)}
-                  value={prev + " ... " + id + " ... " + next + " ... " + star.data}
+                  value={meta + star.data}
                   onKeyPress={this.handleKeyPress}
                   onKeyDown={this.handleKeyUp}
                   onBlur={() => this.props.selected(null)}
@@ -134,7 +112,7 @@ class SingleStarView extends Component {
                }}
                onChange={(e) => this.handleNoteEditChange(e, star)}
                type="text"
-               value={prev + " ... " + id + " ... " + next + " ... " + star.data}
+               value={meta + star.data}
                onKeyPress={this.handleKeyPress}
                onKeyDown={this.handleKeyUp}
                onClick={this.onClickHandler}
@@ -144,7 +122,6 @@ class SingleStarView extends Component {
   }
 
   render() {
-    const star = this.props.star;
     return (
       <form onSubmit={this.handleNoteEditSubmit}>
         <div className="row">
@@ -156,7 +133,7 @@ class SingleStarView extends Component {
               {this.renderInput()}
               <div className="input-group-append">
                   <span className="input-group-text star-remove">
-                    <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.removeStar(this.props.stars, star.id)}/>
+                    <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.onRemove(this.props.star._id)}/>
                   </span>
               </div>
             </div>
@@ -166,10 +143,5 @@ class SingleStarView extends Component {
     );
   }
 }
-
-//
-// export default ({star}) => {
-//     return star.data;
-// }
 
 export default connect(null, actions)(SingleStarView);
