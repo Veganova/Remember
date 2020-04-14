@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
 import * as actions from '../../actions/starActions';
+import {changeFocus} from "../../actions/globalActions";
 import '../styles/SingleStarView.scss';
 
 class SingleStarView extends Component {
@@ -21,12 +22,9 @@ class SingleStarView extends Component {
   }
 
   focusInput = () => {
-    if (this.props.star.focus) {
+    if (this.props.focus === this.props.star._id) {
       this.textInput.focus();
-      this.props.clearFocus();
-    }
-    if (this.props.isSelected) {
-      this.textInput.focus();
+      this.props.changeFocus(null);
     }
   }
 
@@ -86,10 +84,10 @@ class SingleStarView extends Component {
   renderInput() {
     const star = this.props.star;
     let prev, next, id, parentId;
-    parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
-    prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
-    next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
-    id = star._id.substring(star._id.length - 4, star._id.length);
+    // parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
+    // prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
+    // next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
+    // id = star._id.substring(star._id.length - 4, star._id.length);
     const meta = prev && next && id ? parentId + ' | ' +  prev + " ... " + id + " ... " + next + " ... " : "";
 
     if (this.props.isSelected) {
@@ -144,4 +142,8 @@ class SingleStarView extends Component {
   }
 }
 
-export default connect(null, actions)(SingleStarView);
+function mapStateToProps({focus}) {
+  return {focus};
+}
+
+export default connect(mapStateToProps, {...actions, changeFocus})(SingleStarView);

@@ -66,20 +66,18 @@ function doesParentExist(star, listOfStars, byParentId, orignalStar) {
   return false;
 }
 
-function search(stars, search) {
-  if (!search) {
+function search(stars, pattern) {
+  if (!pattern) {
     return stars;
   }
-  var options = {
-    keys: [{
-      name: 'data'
-    }],
+  let options = {
+    keys: ['data'],
     minMatchCharLength: 0,
     threshold: 0.3
   };
   const fuse = new Fuse(stars, options);
 
-  const result = fuse.search(search);
+  const result = fuse.search(pattern);
   return result;
 }
 

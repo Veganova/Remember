@@ -1,5 +1,6 @@
-import {getById} from "../helpers";
+import {getById} from "./helpers";
 import _ from 'lodash';
+import {applyChanges} from "./applyChanges";
 
 // All methods should result in an object with current and changed versions the stars at hand
 // { 'somestarid': {'operation': 'delete/add/update', 'current': {...}, 'changed': {...}}
@@ -139,13 +140,25 @@ const getAddStarChanges = (stars, data, parentId, prevId, nextId, byIdMap = null
 };
 
 const isNestedInTrash = (star, trashStarId, byIdMap) => {
+  if (star._id === trashStarId) {
+    return true;
+  }
+  // Reached top level star
   if (star.parentId === star.userId) {
     return false;
   }
-  if (star.parentId === trashStarId) {
-    return true;
-  }
   return isNestedInTrash(byIdMap[star.parentId], trashStarId, byIdMap);
+};
+
+const getRemoveAllStarsUnderParentChanges = (stars, parentId, byIdMap = null) => {
+  const children = stars.filter(star => star.parentId === parentId);
+  let changes = {};
+  for (const child of children) {
+    const newChanges = getRemoveStarChanges(stars, child._id, byIdMap);
+    changes = _.merge(changes, newChanges);
+    stars = applyChanges(stars, newChanges);
+  }
+  return changes;
 };
 
 const getRemoveStarChanges = (stars, toRemoveStarId, byIdMap = null) => {
@@ -156,10 +169,11 @@ const getRemoveStarChanges = (stars, toRemoveStarId, byIdMap = null) => {
   if (isNestedInTrash(toRemoveStar, trashStar._id, byIdMap)) {
     // Already in trash, must delete
     changes = moveFirstPart(stars, toRemoveStar, byIdMap);
-    changes[toRemoveStar['_id']] = {operation: 'delete', current: toRemoveStar};
+    changes[toRemoveStarId] = {operation: 'delete', current: toRemoveStar};
+    _.merge(changes, getRemoveAllStarsUnderParentChanges(stars, toRemoveStarId, byIdMap));
   } else {
     // Add as first node in trash
-    changes = getMoveStarChanges(stars, toRemoveStarId, trashStar['_id'], null, true, byIdMap);
+    changes = getMoveStarChanges(stars, toRemoveStarId, trashStar['_id'], true, null, byIdMap);
   }
 
   return changes;
@@ -171,12 +185,10 @@ const getMoveStarChanges = (stars, toMoveStarId, parentId, prevId, nextId, byIdM
   byIdMap = byIdMap || getById(stars);
   const toMoveStar = byIdMap[toMoveStarId];
   // combine changes from both steps
-  const changes = _.merge(
+  return _.merge(
       moveFirstPart(stars, toMoveStar, byIdMap),
       moveSecondPart(stars, toMoveStar, parentId, prevId, nextId, byIdMap)
   );
-  changes[toMoveStarId]['changed'].focus = true;
-  return changes;
 };
 
 const getEditStarChanges = (stars, toEditStarId, edits, byIdMap = null) => {
@@ -191,9 +203,10 @@ const getEditStarChanges = (stars, toEditStarId, edits, byIdMap = null) => {
         ...edits
       },
       // Mark change as 'simple' if provided edits only change the 'data' field.
+      // Backend will not perform sync validation on the data field when this is provided
       isSimpleEdit: (Object.keys(edits).length === 1 && "data" in edits)
     }
   }
 }
 
-export {getMoveStarChanges, getRemoveStarChanges, getAddStarChanges, getEditStarChanges};
+export {getMoveStarChanges, getRemoveStarChanges, getRemoveAllStarsUnderParentChanges, getAddStarChanges, getEditStarChanges};

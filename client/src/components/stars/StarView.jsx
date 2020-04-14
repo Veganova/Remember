@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import * as starActions from '../../actions/starActions';
 import {POPUP_TYPE} from '../general/Popup';
 import {addPopup} from "../../actions/globalActions";
-import {formatStars, searchAndFormatStars} from '../../helpers';
+import {formatStars, getById, searchAndFormatStars} from '../../utils/helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
 import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
@@ -26,7 +26,6 @@ class StarView extends Component {
 
     this.displayStar = this.displayStar.bind(this);
     this.onSearchBarChange = this.onSearchBarChange.bind(this);
-    // this.getNextStarIndex = this.getNextStarIndex.bind(this);
     this.starSelected = this.starSelected.bind(this);
   }
 
@@ -73,7 +72,7 @@ class StarView extends Component {
     if (this.checkLock()) {
       this.props.moveStar(this.props.star, starId, parentId, prevId, nextId);
     }
-  }
+  };
 
 
   editStar = (starId, edits) => {
@@ -85,6 +84,13 @@ class StarView extends Component {
   removeStar = (starId) => {
     if (this.checkLock()) {
       this.props.removeStar(this.props.star, starId);
+    }
+  };
+
+  removeChildren = (parentId) => {
+    if (this.checkLock()) {
+      // console.log(this.props.star.filter(star => star._id === parentId));
+      this.props.removeChildren(this.props.star, parentId);
     }
   };
 
@@ -109,7 +115,7 @@ class StarView extends Component {
                 </Tab>
             )
           })}
-          <NewTab prevId={prevId}/>
+          <NewTab prevId={prevId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
         </TabList>
     )
   }
@@ -133,7 +139,7 @@ class StarView extends Component {
                   <div>
                     <div className="float-right">
                       <button className="btn btn-danger" onClick={() => {
-                        this.props.removeChildren(star._id)
+                        this.removeChildren(star._id);
                       }}>
                         <i className="fa fa-minus"/>
                         Delete All
@@ -201,18 +207,6 @@ class StarView extends Component {
       }
     }
   }
-
-  // getNextStarIndex(star) {
-  //   const parent = this.findInNestable(star, this.formattedStars, undefined);
-  //
-  //   for (let i = 0; i < parent.childStars.length; i++) {
-  //     // return first index found greater than provided star's index
-  //     if (parent.childStars[i].index > star.index) {
-  //       return parent.childStars[i].index;
-  //     }
-  //   }
-  //   return 1;
-  // }
 
   displayAllStars() {
     let index = this.state.tabIndex;

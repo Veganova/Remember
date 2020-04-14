@@ -1,4 +1,4 @@
-import {ADD_POPUP, REMOVE_POPUP, ADD_LOCK, REMOVE_LOCK} from './types';
+import {ADD_POPUP, REMOVE_POPUP, CHANGE_FOCUS} from './types';
 
 const addPopup = (message, popupType) => async dispatch => {
   dispatch({type: ADD_POPUP, payload: {message, popupType}});
@@ -8,12 +8,8 @@ const removePopup = (popup) => async dispatch => {
   dispatch({type: REMOVE_POPUP, payload: popup});
 }
 
-const addLock = (changes) => async dispatch => {
-  dispatch({type: ADD_LOCK, payload: {changes}});
+const changeFocus = (focus) => async dispatch => {
+  dispatch({type: CHANGE_FOCUS, payload: {focus}});
 }
 
-const removeLock = (changes) => async dispatch => {
-  dispatch({type: REMOVE_LOCK, payload: {changes}});
-}
-
-export {addPopup, removePopup};
+export {addPopup, removePopup, changeFocus};

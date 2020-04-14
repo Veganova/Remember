@@ -1,105 +1,6 @@
-import {GET_STARS, REMOVE_CHILDREN, UPDATE_LOCAL_STARS, CLEAR_FOCUS } from '../actions/types'
-import { constructStars } from '../helpers.js';
-import {getById} from "../helpers";
-
-
-
-function updateStarByChange(stars, targetStar, change) {
-  let isFocusChanged = false;
-  console.log(change);
-  if (change["operation"] === "update") {
-    for (const changedKey in change["changed"]) {
-      targetStar[changedKey] = change["changed"][changedKey];
-      if (changedKey === 'focus') {
-        isFocusChanged = true;
-      }
-    }
-    return stars;
-  } else if (change["operation"] === "delete") {
-    return deleteStar(stars, targetStar);
-  } else if (change["operation"] === "add") {
-    isFocusChanged = true;
-    if (!("saved" in change)) {
-      // ID generation is left to backend. Will not create any stars locally
-      throw 'Add operation not implemented for updating local state ' + JSON.stringify(change);
-    }
-    // must sort list after adding this!
-    stars.push({...change["saved"], focus: true});
-    // stars[stars.length - 1].focus = true;
-    return stars;
-  }
-  // The focus has changed
-  if (isFocusChanged) {
-    stars.forEach(star => {
-      if (star._id !== targetStar._id) {
-        star.focus = false;
-      }
-    });
-  }
-  throw 'No such operation ' + JSON.stringify(change);
-}
-
-// Function handles moving stars to trash and permanently deletion
-function removeStar(newState, removedStar) {
-  if (removedStar.trashed) {
-    let trashedId;
-    for (let i = 0; i < newState.length; i++) {
-      if (newState[i].data === 'Trash' && newState[i].parentId === newState[i].userId) {
-        trashedId = newState[i]['_id'];
-      }
-    }
-    if (!trashedId) {
-      alert("No trash section");
-    }
-    for (let i = 0; i < removedStar.trashed.length; i++) {
-      for (let k = 0; k < newState.length; k++) {
-        if (removedStar.trashed[i] === newState[k]['_id']) {
-           newState[k].parentId = trashedId;
-        }
-      }
-    }
-    return newState;
-  }
-
-  if (removedStar.deleted) {
-    for (let i = 0; i < removedStar.deleted.length; i++) {
-      newState = deleteStar(newState, { '_id': removedStar.deleted[i] });
-    }
-    return newState;
-  }
-  // move totrash
-  return updateStar(newState, removedStar);
-}
-
-function deleteStar(newState, removedStar) {
-  return newState.filter(star => removedStar['_id'] !== star['_id']);
-}
-
-// If star does not exist, it will simply add
-function updateStar(state, updatedStar) {
-   const newState = deleteStar(state, updatedStar)
-   return addStar(newState, updatedStar);
-}
-
-function addStar(newState, formattedStar) {
-  let previousLength = newState.length;
-  // with no previous link, putting it at the front of the list is safe.
-  if (formattedStar.prev === null) {
-    newState.unshift(formattedStar);
-  }
-  for (let i = 0; i < newState.length; i++) {
-    if (formattedStar.prev === newState[i]['_id']) {
-      newState.splice(i + 1, 0, formattedStar);
-      break;
-    }
-  }
-
-  if (newState.length === previousLength) {
-    alert('add star reducer did not add element to state');
-  }
-
-  return newState;
-}
+import {GET_STARS, UPDATE_LOCAL_STARS } from '../actions/types'
+import {getById} from "../utils/helpers";
+import {applyChanges} from "../utils/applyChanges";
 
 /**
  * Uses the 'prev' and 'next' field in stars to compile a single list that contains the provided different linked lists
@@ -138,34 +39,11 @@ export default function(state = null, action) {
   }
   switch (action.type) {
     case GET_STARS:
-      if (!action.payload) {
-        return [];
-      }
       console.log(action.payload);
       return linkSort(action.payload);
-    case REMOVE_CHILDREN:
-      return removeStar(newState, action.payload);
     case UPDATE_LOCAL_STARS:
-      let byId = getById(newState);
       const { changes } = action.payload;
-      let allSimpleEdit = true;
-      for (let changedStarId in changes) {
-        const change = changes[changedStarId];
-        if (!change.isSimpleEdit) {
-          allSimpleEdit = false;
-        }
-        const targetStar = byId[changedStarId];
-        newState = updateStarByChange(newState, targetStar, change);
-      }
-      if (allSimpleEdit) {
-        // No need to sort when all edits are 'simple'
-        console.log("Simple edit found. No sort required");
-        return newState;
-      }
-      return linkSort(newState);
-    case CLEAR_FOCUS:
-      newState.forEach(star => star.focus = false);
-      return newState;
+      return applyChanges(newState, changes);
     default:
       return state;
   }

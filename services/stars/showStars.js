@@ -3,9 +3,7 @@ const Star = mongoose.model('stars');
 
 
 async function showStars(userId) {
-  const stars = await Star.find({ userId });//.sort({index:1});
-
-  return stars;
+  return await Star.find({userId});
 }
 
 module.exports = {showStars};

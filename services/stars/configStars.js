@@ -1,10 +1,26 @@
-const {addStar} = require('./addStar');
+const {updateChanges} = require('./updateStar');
 
 module.exports = {
   "configStars" : async (user, username) => {
     // Config for a new users
-    // const userStar = await addStar(user.id, user.id, username, 0);
-    const rVal = await addStar(user.id, user.id, "Trash", 0.8, true);
-    const rVal1 = await addStar(user.id, user.id, "Notes", 0.2);
+    const changes = {
+      'new_node_place_holder_1' : {
+        _id: 'new_node_place_holder_1',
+        data: 'Notes',
+        parentId: user._id,
+        prev: null,
+        next: 'new_node_place_holder_2',
+        userId: user._id
+      },
+      'new_node_place_holder_2': {
+        _id: 'new_node_place_holder_2',
+        data: 'Trash',
+        parentId: user._id,
+        prev: 'new_node_place_holder_2',
+        next: null,
+        userId: user._id
+      }
+    };
+    return await updateChanges(user._id, changes);
   }
-}
+};

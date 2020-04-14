@@ -68,8 +68,8 @@ describe('Test removeStar', () => {
     const originalNoteChild1 = sampleStarById['note_child1'];
     expect(changes['note_child1']['current']).toEqual(originalNoteChild1);
     expect(changes['note_child1']['changed']).toEqual({
-      prev: null,
-      next: 'trash_child1',
+      prev: 'trash_child1',
+      next: null,
       parentId: 'root_trash',
     });
 
