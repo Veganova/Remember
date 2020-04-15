@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
 import { Tab } from 'react-tabs';
 import { connect } from 'react-redux'
-import * as actions from "../../actions";
+import {addPopup} from "../../actions/globalActions";
+import {POPUP_TYPE} from "../general/Popup";
 
 class NewTab extends Component {
 
@@ -18,16 +19,21 @@ class NewTab extends Component {
   }
 
   validTabName(starName) {
-    return starName !== ""
-        && starName !== "Notes"
-        && starName !== "Trash";
+    if (starName === "") {
+      this.props.addPopup("Empty Input - Tab name cannot be empty", POPUP_TYPE.WARNING);
+      return false;
+    }
+    if (starName === "Notes" || starName === "Trash") {
+      this.props.addPopup("Conflicting name - Tab name cannot be 'Notes' or 'Trash'", POPUP_TYPE.WARNING);
+      return false;
+    }
+    return true;
   }
 
   handleSubmit(event) {
     event.preventDefault();
     if(this.validTabName(this.state.val)) {
-      const newIndex = (this.props.prevIndex + 1) / 2;
-      this.props.addStar(this.props.auth['_id'], this.state.val, newIndex);
+      this.props.onNewNote(event, this.state.val);
 
       // Empty out input box
       this.setState({val: ''});
@@ -61,8 +67,4 @@ class NewTab extends Component {
   }
 }
 
-function mapStateToProps({ auth }) {
-  return { auth };
-}
-
-export default connect(mapStateToProps, actions)(NewTab);
+export default connect(null, {addPopup})(NewTab);

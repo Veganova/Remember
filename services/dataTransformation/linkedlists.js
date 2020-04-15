@@ -24,7 +24,7 @@ function compare(a, b) {
 
 /**
  * Recurse through these in the same order the front end does
- * at each level, add the note in the correct order- averaging and using fractions.
+ * at each level, add the note in the correct order
  */
 function recurseDown(baseStarId, starsById, starsByParentId) {
   let total = [];
@@ -83,10 +83,18 @@ Star.find()//One({data: "Modes?"})
     let byId = getById(newStars);
 
     userIds.forEach((userId) => {
-      let updateds = recurseDown(userId, byId, byParentId)
+      let updateds = recurseDown(userId, byId, byParentId);
+
       console.log(updateds);
       for(let i = 0; i < updateds.length; i+=1) {
         let updated = updateds[i];
+        if (!updated.prev) {
+          updated.prev = "";
+        }
+        if (!updated.next) {
+          updated.next = "";
+        }
+        // console.log(updated);
         if (i + 1 >= updateds.length) {
           updateStar(userId, updated['_id'], {"next": updated.next, "prev":updated.prev}).then((x) => mongoose.disconnect());
         } else {

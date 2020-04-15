@@ -33,7 +33,7 @@ export function constructStars(byParentId, parentId) {
   parentStars.forEach((parentStar) => {
     const childStars = constructStars(byParentId, parentStar['_id']);
     const copy = JSON.parse(JSON.stringify(parentStar));
-    copy.id = copy["_id"];
+    copy.id = copy['_id'];
     copy.childStars = childStars;
     stars.push(copy);
   });
@@ -42,6 +42,7 @@ export function constructStars(byParentId, parentId) {
 }
 
 export function formatStars(userId, unformatedData) {
+  console.log("helpers.js/formatStars");
   const allStars = unformatedData;
   const byParentId = getByParentId(allStars);
   return constructStars(byParentId, userId);
@@ -65,20 +66,18 @@ function doesParentExist(star, listOfStars, byParentId, orignalStar) {
   return false;
 }
 
-function search(stars, search) {
-  if (!search) {
+function search(stars, pattern) {
+  if (!pattern) {
     return stars;
   }
-  var options = {
-    keys: [{
-      name: 'data'
-    }],
+  let options = {
+    keys: ['data'],
     minMatchCharLength: 0,
     threshold: 0.3
   };
   const fuse = new Fuse(stars, options);
 
-  const result = fuse.search(search);
+  const result = fuse.search(pattern);
   return result;
 }
 
@@ -102,7 +101,7 @@ export function _searchAndFormatStars(searchTerm, unformatedData) {
 }
 
 function markFormattedStars(star, searchResult, acc) {
-  if (searchResult.filter(cur => cur["_id"] === star.id).length > 0) {
+  if (searchResult.filter(cur => cur["_id"] === star._id).length > 0) {
     acc.push(star);
     return;
   }
