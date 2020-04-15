@@ -21,7 +21,7 @@
     "cookie-session": "^2.0.0-beta.3",
     "express": "^4.16.3",
     "lodash": "^4.17.10",
-    "mongoose": "^5.2.6",
+    "mongoose": "^5.7.5",
     "passport": "^0.4.0",
     "passport-google-oauth20": "^2.0.0"
   }
