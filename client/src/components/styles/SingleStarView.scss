@@ -1,34 +1,44 @@
-.star-group {
-    z-index: 1;
+@import "variables";
 
-}
-.star-group .input-group-text, .star-group input {
-    border-radius:0 !important;
-    background: white;
-    /*1px solid #*/
-    border: 0px;
-    border-bottom: 1px solid #ced4da;
-}
+$noteHeight: 30px;
 
-.star-input:focus {
-    background: rgba(221, 235, 255, 0.45);
+.note {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-end;
+    background: #373838;
+    margin-bottom: 3px;
+    border-radius: $noteHeight / 3;
 
-    border-bottom: 2px solid #76bedd;
-    -webkit-box-shadow: none;
-    box-shadow: none;
+    input, textarea {
+        background: inherit;
+        background-color: rgba(0,0,0,0);
+        color: inherit;
+        margin: 2px 11px;
+        flex: 1;
+        border: none;
+        line-height: $noteHeight;
+        max-height: 3 * $noteHeight;
+        resize: none;
 
-}
+        &:focus {
+            outline: none;
+        }
+    }
 
-.star-remove {
-    display:none;
-    background:transparent !important;
-}
+    &:hover {
+        z-index: 2;
 
-.star-group:hover {
-    z-index: 2;
-    box-shadow: 0px 5px 5px rgba(52, 52, 52, 0.5);
-}
+        & .star-remove {
+            display: inherit;
+        }
+    }
 
-.star-group:hover .star-remove {
-    display: inherit;
+    .star-remove {
+        display:none;
+        background:transparent !important;
+        margin-top: 10px;
+        margin-right: 5px;
+    }
 }

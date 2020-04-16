@@ -129,7 +129,7 @@ class StarView extends Component {
               d = {'disabled': 'disabled'}
             }
             return (
-                <TabPanel className="form-group tab-pane" key={star['_id']}>
+                <TabPanel className="tab-pane" key={star['_id']}>
                   {/* Displays the hierarchy of notes */}
                   {this.displayStarsFull(star.childStars, star)}
                   <hr className="col-xs-12"/>
@@ -271,7 +271,7 @@ class StarView extends Component {
         this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
       }
       return (
-          <div className="container-fluid">
+          <div className="entity-container container-fluid">
             <Logout/>
             {this.addSearchBar()}
             {this.displayAllStars()}
