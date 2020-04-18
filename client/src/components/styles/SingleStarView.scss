@@ -7,9 +7,10 @@ $noteHeight: 30px;
     flex-direction: row;
     align-items: flex-start;
     justify-content: flex-end;
-    background: #373838;
+    background: $note-background;
     margin-bottom: 3px;
     border-radius: $noteHeight / 3;
+    cursor: grab;
 
     input, textarea {
         background: inherit;
@@ -19,7 +20,6 @@ $noteHeight: 30px;
         flex: 1;
         border: none;
         line-height: $noteHeight;
-        max-height: 3 * $noteHeight;
         resize: none;
 
         &:focus {

@@ -1,0 +1,25 @@
+@import "variables";
+
+$tab-height: 32px;
+$tab-width: 125px;
+
+.note-tab-container {
+  display: flex;
+  overflow: scroll;
+
+  .note-tab {
+    margin-right: 17px;
+    background: $note-background;
+    padding: 4px 8px;
+    height: $tab-height;
+    border-radius: $tab-height / 3;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: min-width 0.3s ease-in-out;
+  }
+
+  &::after {
+    content: "\00a0\00a0";
+  }
+}

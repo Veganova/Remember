@@ -72,7 +72,7 @@ class SingleStarView extends Component {
                   onKeyPress={this.handleKeyPress}
                   onKeyDown={this.handleKeyUp}
                   onBlur={() => this.props.selected(null)}
-                  maxColumns={3}
+                  maxRows={3}
         />
     );
   }

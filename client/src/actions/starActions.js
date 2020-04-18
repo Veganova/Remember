@@ -62,6 +62,7 @@ const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
 // prev and next are the new ids
 const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispatch => {
   const changes = getMoveStarChanges(stars, toMoveStarId, parentId, prevId, nextId);
+  console.log(changes);
   dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
   dispatch({type: CHANGE_FOCUS, payload: {focus: toMoveStarId}});
   updateRemoteAndCheck(dispatch, changes);
