@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
-import { Tab } from 'react-tabs';
-import { connect } from 'react-redux'
+import {Tab} from 'react-tabs';
+import {connect} from 'react-redux'
 import {addPopup} from "../../actions/globalActions";
 import {POPUP_TYPE} from "../general/Popup";
 
@@ -32,7 +32,7 @@ class NewTab extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    if(this.validTabName(this.state.val)) {
+    if (this.validTabName(this.state.val)) {
       this.props.onNewNote(event, this.state.val);
 
       // Empty out input box
@@ -47,22 +47,24 @@ class NewTab extends Component {
   render() {
     if (!this.state.adding) {
       return (
-        <Tab onClick={(e) => this.setState({adding: true})}>
-          <div>{"+"}</div>
-        </Tab>
+          <div className="add-note" onClick={() => this.setState({adding: true})}>
+            <div className="add-note-button">+</div>
+          </div>
       );
     }
     return (
-      <Tab>
-        <form onSubmit={this.handleSubmit}>
-              <input className="form-control py-2"
-                     autoFocus
-                     onBlur={(e) => {this.setState({adding: false})}}
-                     placeholder="New tab"
-                     value={this.state.val}
-                     onChange={this.handleChange} />
-        </form>
-      </Tab>
+        <div className="add-note">
+          <form onSubmit={this.handleSubmit}>
+            <input className="form-control py-2"
+                   autoFocus
+                   onBlur={(e) => {
+                     this.setState({adding: false})
+                   }}
+                   placeholder="New tab"
+                   value={this.state.val}
+                   onChange={this.handleChange}/>
+          </form>
+        </div>
     );
   }
 }

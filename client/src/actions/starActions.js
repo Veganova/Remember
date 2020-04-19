@@ -62,19 +62,23 @@ const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
 // prev and next are the new ids
 const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispatch => {
   const changes = getMoveStarChanges(stars, toMoveStarId, parentId, prevId, nextId);
-  console.log(changes);
+  const toMoveStar = changes[toMoveStarId]['current'];
   dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
-  dispatch({type: CHANGE_FOCUS, payload: {focus: toMoveStarId}});
+  if (toMoveStar.parentId !== toMoveStar.userId) {
+    dispatch({type: CHANGE_FOCUS, payload: {focus:  toMoveStarId}});
+  }
   updateRemoteAndCheck(dispatch, changes);
 };
 
 const removeStar = (stars, id) => async dispatch => {
-  const changes = getRemoveStarChanges(stars, id);
-  const removalStar = stars.find(star => star._id === id);
+  const starsCopied = JSON.parse(JSON.stringify(stars));
+  const changes = getRemoveStarChanges(starsCopied, id);
+  const removalStar = starsCopied.find(star => star._id === id);//changes[id]['current'];
   const focus = removalStar.next || removalStar.prev;
+  console.log(removalStar, focus);
   dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
   dispatch({type: CHANGE_FOCUS, payload: {focus}});
-  updateRemoteAndCheck(dispatch, changes);
+  // updateRemoteAndCheck(dispatch, changes);
 };
 
 const editStarRemote = _.debounce(updateRemoteAndCheck, 500);

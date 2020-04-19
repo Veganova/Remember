@@ -22,12 +22,9 @@ class StarView extends Component {
 
   constructor(props) {
     super(props);
-    this.nullStarId = -1;
-    this.state = {searchTerm: '', selectedSectionId: null, tabIndex: 0, lastTabIndex: 0, selectedStar: this.nullStarId};
+    this.state = {searchTerm: '', selectedSectionId: null, tabIndex: 0, lastTabIndex: 0};
 
-    this.displayStar = this.displayStar.bind(this);
     this.onSearchBarChange = this.onSearchBarChange.bind(this);
-    this.starSelected = this.starSelected.bind(this);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -37,20 +34,11 @@ class StarView extends Component {
     }
   }
 
-  starSelected(star) {
-    let starId = this.nullStarId;
-    if (star) {
-      starId = star._id
-    }
-    this.setState({selectedStar: starId})
-  }
 
-  displayStar(star) {
+  displayStar = (star) => {
     return <SingleStarView
         stars={this.props.star}
         star={star}
-        isSelected={star._id === this.state.selectedStar}
-        selected={this.starSelected}
         onAddNewNote={this.handleNewNoteSubmit}
         onRemove={this.removeStar}
         onEdit={this.editStar}
@@ -212,8 +200,9 @@ class StarView extends Component {
     }
   }
 
-  displayNewTabs = () => {
+  displayTabs = () => {
     console.log(this.formattedStars);
+    const lastStarId = this.formattedStars[this.formattedStars.length - 1];
     return (
         <div className="top-note-bar">
           <NoteSectionsTabs
@@ -222,22 +211,16 @@ class StarView extends Component {
               onSectionSelect={(starId) => this.setState({selectedSectionId: starId})}
               selectedSectionId={this.state.selectedSectionId}
           />
-          <div className="add-note">
-            <div className="add-note-button">+</div>
-          </div>
+          <NewTab prevId={lastStarId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
         </div>
     )
   }
 
   displayAllStars() {
-    let index = this.state.tabIndex;
     return (
         <div className="">
-          {this.displayNewTabs()}
-          <Tabs selectedIndex={index} onSelect={tabIndex => this.setState({tabIndex, lastTabIndex: tabIndex})}>
-            {this.displayStars()}
-            {this.displayChildStars()}
-          </Tabs>
+          {this.displayTabs()}
+          {this.displayChildStars()}
         </div>
     )
   }

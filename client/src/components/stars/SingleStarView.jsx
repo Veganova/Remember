@@ -21,6 +21,7 @@ class SingleStarView extends Component {
 
   focusInput = () => {
     if (this.props.focus === this.props.star._id) {
+      console.log("asdfasdfsadfdsf", this.props.star._id);
       this.textArea.focus();
       this.props.changeFocus(null);
     }
@@ -58,10 +59,10 @@ class SingleStarView extends Component {
   renderInput() {
     const star = this.props.star;
     let prev, next, id, parentId;
-    // parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
-    // prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
-    // next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
-    // id = star._id.substring(star._id.length - 4, star._id.length);
+    parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
+    prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
+    next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
+    id = star._id.substring(star._id.length - 4, star._id.length);
     const meta = prev && next && id ? parentId + ' | ' +  prev + " ... " + id + " ... " + next + " ... " : "";
 
     return (
@@ -71,7 +72,7 @@ class SingleStarView extends Component {
                   value={meta + star.data}
                   onKeyPress={this.handleKeyPress}
                   onKeyDown={this.handleKeyUp}
-                  onBlur={() => this.props.selected(null)}
+                  // onBlur={() => this.props.selected(null)}
                   maxRows={3}
         />
     );
@@ -82,8 +83,8 @@ class SingleStarView extends Component {
         <div className="note">
           {this.renderInput()}
           <span className="star-remove">
-                  <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.onRemove(this.props.star._id)}/>
-            </span>
+            <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.onRemove(this.props.star._id)}/>
+          </span>
         </div>
     );
   }

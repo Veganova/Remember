@@ -1,6 +1,8 @@
 import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 import React from 'react';
 import "../styles/NoteSectionTabs.scss";
+import {connect} from "react-redux";
+import {changeFocus} from "../../actions/globalActions";
 
 
 const getItemStyle = (isDragging, draggableStyle, isSelected) => {
@@ -29,14 +31,12 @@ class NoteSectionTab extends React.Component {
     console.log(this.noteSection)
   }
 
-  getStyles = () => {
+  getStyles = (isDragging) => {
     const width = '125px';
-    const result = {
+    return {
       width: width,
-      minWidth: this.state.hover ? (this.noteSection ? this.noteSection.scrollWidth : width) : width
+      minWidth:  ((isDragging || this.state.hover || this.props.isSelected) ? (this.noteSection ? this.noteSection.scrollWidth : width) : width)
     };
-    // console.log(result);
-    return result;
   }
 
   render() {
@@ -55,7 +55,7 @@ class NoteSectionTab extends React.Component {
                     {...provided.dragHandleProps}
                     style={{
                       ...getItemStyle(snapshot.isDragging, provided.draggableProps.style, isSelected),
-                      ...this.getStyles()
+                      ...this.getStyles(snapshot.isDragging)
                     }}
                     onClick={() => onSectionSelect(star._id, index)}
                     onMouseEnter={() => this.setState({hover: true})}
@@ -71,7 +71,7 @@ class NoteSectionTab extends React.Component {
 }
 
 
-export default class NoteSections extends React.Component {
+class NoteSections extends React.Component {
   handleDragEnd = ({source, destination}) => {
     if (!destination || source.index === destination.index) {
       return;
@@ -102,6 +102,15 @@ export default class NoteSections extends React.Component {
     this.props.moveSection(movingStar._id, movingStar.parentId, prevId, nextId);
   };
 
+  isNoteTabSelected = (tabId, index) => {
+    if (tabId === this.props.focus) {
+      this.props.changeFocus(null);
+      this.props.onSectionSelect(tabId, index);
+      return false;
+    }
+    return tabId === this.props.selectedSectionId;
+  };
+
   render() {
     console.log(this.props.starSections);
     return (
@@ -121,7 +130,7 @@ export default class NoteSections extends React.Component {
                             key={item._id}
                             star={item}
                             index={index}
-                            isSelected={item._id === this.props.selectedSectionId}
+                            isSelected={this.isNoteTabSelected(item._id, index)}
                         />
                     )
                   })}
@@ -133,3 +142,9 @@ export default class NoteSections extends React.Component {
     );
   }
 }
+
+function mapStateToProps({focus}) {
+  return {focus};
+}
+
+export default connect(mapStateToProps, {changeFocus})(NoteSections);
