@@ -7,7 +7,6 @@ import {addPopup} from "../../actions/globalActions";
 import {formatStars, searchAndFormatStars} from '../../utils/helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
-import {Tab, TabList, Tabs} from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
 import NewTab from "./NewTab";
@@ -34,7 +33,6 @@ class StarView extends Component {
     }
   }
 
-
   displayStar = (star) => {
     return <SingleStarView
         stars={this.props.star}
@@ -43,8 +41,7 @@ class StarView extends Component {
         onRemove={this.removeStar}
         onEdit={this.editStar}
     />;
-  }
-
+  };
 
   checkLock = (errorMessage = "Service operation ongoing, app is currently locked.") => {
     if (this.props.lock.length > 0) {
@@ -85,36 +82,9 @@ class StarView extends Component {
 
   removeChildren = (parentId) => {
     if (this.checkLock()) {
-      // console.log(this.props.star.filter(star => star._id === parentId));
       this.props.removeChildren(this.props.star, parentId);
     }
   };
-
-  displayRemove(star) {
-    // Do note have delete option for the two default tabs
-    const userId = this.props.auth["_id"]
-    if (!(star.parentId === userId && (star.data === 'Trash' || star.data === 'Notes'))) {
-      return <i className="fa fa-times gray" aria-hidden="true" onClick={() => this.removeStar(star._id)}/>
-    }
-  }
-
-  displayStars() {
-    let prevId = "";
-    return (
-        <TabList>
-          {_.map(this.formattedStars, (star) => {
-            prevId = star._id;
-            return (
-                <Tab key={star._id}>
-                  {star.data + " "}
-                  {this.displayRemove(star)}
-                </Tab>
-            )
-          })}
-          <NewTab prevId={prevId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
-        </TabList>
-    )
-  }
 
   displayChildStars() {
     let star = this.formattedStars.find(formattedStar => formattedStar._id === this.state.selectedSectionId);
@@ -201,7 +171,6 @@ class StarView extends Component {
   }
 
   displayTabs = () => {
-    console.log(this.formattedStars);
     const lastStarId = this.formattedStars[this.formattedStars.length - 1];
     return (
         <div className="top-note-bar">
@@ -210,6 +179,7 @@ class StarView extends Component {
               moveSection={this.moveStar}
               onSectionSelect={(starId) => this.setState({selectedSectionId: starId})}
               selectedSectionId={this.state.selectedSectionId}
+              removeSection={this.removeStar}
           />
           <NewTab prevId={lastStarId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
         </div>

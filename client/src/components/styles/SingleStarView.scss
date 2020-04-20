@@ -31,14 +31,23 @@ $noteHeight: 30px;
         z-index: 2;
 
         & .star-remove {
-            display: inherit;
+            svg {
+                max-width: 1.15em;
+            }
         }
     }
 
     .star-remove {
-        display:none;
+        display: inherit;
         background:transparent !important;
         margin-top: 10px;
         margin-right: 5px;
+        cursor: pointer;
+
+        svg {
+            transition: max-width 0.22s ease-in-out;
+            max-width: 0;
+            max-height: 1.15em;
+        }
     }
 }

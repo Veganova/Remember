@@ -3,6 +3,7 @@ import React from 'react';
 import "../styles/NoteSectionTabs.scss";
 import {connect} from "react-redux";
 import {changeFocus} from "../../actions/globalActions";
+import {XIcon} from "../general/Common";
 
 
 const getItemStyle = (isDragging, draggableStyle, isSelected) => {
@@ -27,16 +28,30 @@ class NoteSectionTab extends React.Component {
     }
   }
 
-  componentDidMount() {
-    console.log(this.noteSection)
+  componentDidUpdate(prevProps, prevState) {
+    if (this.noteSectionWrapper && !prevProps.isSelected && this.props.isSelected) {
+      this.noteSectionWrapper.scrollIntoView({behavior: 'smooth', block: 'end'});
+    }
   }
 
   getStyles = (isDragging) => {
     const width = '125px';
     return {
       width: width,
-      minWidth:  ((isDragging || this.state.hover || this.props.isSelected) ? (this.noteSection ? this.noteSection.scrollWidth : width) : width)
+      minWidth: ((isDragging || this.state.hover || this.props.isSelected) ? (this.noteSection ? this.noteSection.scrollWidth : width) : width)
     };
+  }
+
+  // Do not show delete option for default Notes and Trash tabs.
+  // When a tab is selected, show the delete option at all times.
+  renderRemoveTab = (star) => {
+    if (star.data === 'Notes' || star.data === 'Trash') return null;
+
+    return (
+        <span className={this.props.isSelected ? "tab-remove-show" : "tab-remove"}>
+          <XIcon onClick={() => this.props.removeSection(star._id)}/>
+        </span>
+    )
   }
 
   render() {
@@ -45,23 +60,26 @@ class NoteSectionTab extends React.Component {
         <Draggable draggableId={star._id} index={index}>
           {(provided, snapshot) => {
             return (
-                <div
-                    className="note-tab"
-                    ref={(e) => {
-                      this.noteSection = e;
-                      provided.innerRef(e);
-                    }}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    style={{
-                      ...getItemStyle(snapshot.isDragging, provided.draggableProps.style, isSelected),
-                      ...this.getStyles(snapshot.isDragging)
-                    }}
-                    onClick={() => onSectionSelect(star._id, index)}
-                    onMouseEnter={() => this.setState({hover: true})}
-                    onMouseLeave={() => this.setState({hover: false})}
+                <div className="note-tab"
+                     ref={(el) => {
+                       this.noteSectionWrapper = el;
+                       provided.innerRef(el);
+                     }}
+                     {...provided.draggableProps}
+                     {...provided.dragHandleProps}
+                     style={getItemStyle(snapshot.isDragging, provided.draggableProps.style, isSelected)}
+                     onMouseEnter={() => this.setState({hover: true})}
+                     onMouseLeave={() => this.setState({hover: false})}
                 >
-                  <span>{star.data}</span>
+                  <div
+                      className="note-tab-text"
+                      ref={(e) => this.noteSection = e}
+                      style={this.getStyles(snapshot.isDragging)}
+                      onClick={() => onSectionSelect(star._id, index)}
+                  >
+                    <span>{star.data}</span>
+                  </div>
+                  {this.renderRemoveTab(star)}
                 </div>
             )
           }}
@@ -131,6 +149,7 @@ class NoteSections extends React.Component {
                             star={item}
                             index={index}
                             isSelected={this.isNoteTabSelected(item._id, index)}
+                            removeSection={this.props.removeSection}
                         />
                     )
                   })}

@@ -73,12 +73,12 @@ const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispat
 const removeStar = (stars, id) => async dispatch => {
   const starsCopied = JSON.parse(JSON.stringify(stars));
   const changes = getRemoveStarChanges(starsCopied, id);
-  const removalStar = starsCopied.find(star => star._id === id);//changes[id]['current'];
-  const focus = removalStar.next || removalStar.prev;
-  console.log(removalStar, focus);
+  const removalStar = changes[id]['current'];
+  // TODO #17: don't know why this works but it does. Investigate.
+  const focus = removalStar._id; //next || removalStar.prev;
   dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
   dispatch({type: CHANGE_FOCUS, payload: {focus}});
-  // updateRemoteAndCheck(dispatch, changes);
+  updateRemoteAndCheck(dispatch, changes);
 };
 
 const editStarRemote = _.debounce(updateRemoteAndCheck, 500);

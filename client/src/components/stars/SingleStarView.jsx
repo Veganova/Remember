@@ -4,6 +4,7 @@ import * as actions from '../../actions/starActions';
 import {changeFocus} from "../../actions/globalActions";
 import '../styles/SingleStarView.scss';
 import TextareaAutosize from 'react-textarea-autosize';
+import {XIcon} from "../general/Common";
 
 class SingleStarView extends Component {
 
@@ -21,11 +22,10 @@ class SingleStarView extends Component {
 
   focusInput = () => {
     if (this.props.focus === this.props.star._id) {
-      console.log("asdfasdfsadfdsf", this.props.star._id);
       this.textArea.focus();
       this.props.changeFocus(null);
     }
-  }
+  };
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -45,8 +45,7 @@ class SingleStarView extends Component {
       // DOWN arrow
       // simulate tab
     }
-  }
-
+  };
 
   handleNoteEditChange = (event, star) => {
     const data = event.target.value;
@@ -56,13 +55,13 @@ class SingleStarView extends Component {
     this.props.onEdit(star._id, {data});
   }
 
-  renderInput() {
+  renderInput = () => {
     const star = this.props.star;
     let prev, next, id, parentId;
-    parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
-    prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
-    next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
-    id = star._id.substring(star._id.length - 4, star._id.length);
+    // parentId = star.parentId.substring(star.parentId.length - 4, star.parentId.length);
+    // prev = star.prev ? star.prev.substring(star.prev.length - 4, star.prev.length) : 'null';
+    // next = star.next ? star.next.substring(star.next.length - 4, star.next.length) : 'null';
+    // id = star._id.substring(star._id.length - 4, star._id.length);
     const meta = prev && next && id ? parentId + ' | ' +  prev + " ... " + id + " ... " + next + " ... " : "";
 
     return (
@@ -83,7 +82,7 @@ class SingleStarView extends Component {
         <div className="note">
           {this.renderInput()}
           <span className="star-remove">
-            <i className="fa fa-times" aria-hidden="true" onClick={() => this.props.onRemove(this.props.star._id)}/>
+            <XIcon onClick={() => this.props.onRemove(this.props.star._id)} />
           </span>
         </div>
     );

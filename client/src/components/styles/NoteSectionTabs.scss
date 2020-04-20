@@ -3,23 +3,100 @@
 $tab-height: 32px;
 $tab-width: 125px;
 
-.note-tab-container {
-  display: flex;
-  overflow: scroll;
 
-  .note-tab {
-    margin-right: 17px;
-    background: $note-background;
-    padding: 4px 8px;
-    height: $tab-height;
-    border-radius: $tab-height / 3;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    transition: min-width 0.3s ease-in-out;
+.top-note-bar {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+
+  .note-tab-container {
+    display: flex;
+    overflow: scroll;
+    margin-bottom: 15px;
+    margin-right: 10px;
+
+    .note-tab {
+      display: flex;
+      //align-items: center;
+      //justify-content: center;
+      margin-right: 17px;
+      background: $note-background;
+      padding: 4px 8px;
+      height: $tab-height;
+      border-radius: $tab-height / 3;
+
+      .note-tab-text {
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        transition: min-width 0.3s ease-in-out;
+      }
+
+      &:hover {
+        z-index: 3;
+
+        & .tab-remove {
+          svg {
+            max-width: 1.15em;
+          }
+        }
+      }
+
+      .tab-remove {
+        z-index: 5;
+        svg {
+          transition: max-width 0.3s ease-in-out;
+          max-width: 0;
+        }
+        display: inline;
+        cursor: pointer;
+      }
+
+      .tab-remove-show {
+        cursor: pointer;
+        svg {
+          max-width: 1.15em;
+        }
+      }
+    }
+
+    &::after {
+      content: "\00a0\00a0";
+    }
   }
 
-  &::after {
-    content: "\00a0\00a0";
+  .add-tab {
+    display: flex;
+
+    .add-tab-input-wrapper {
+      pointer-events: none;
+      background: linear-gradient(to left, $third-bg 90%, transparent);
+      padding-left: 20px;
+      margin-left: -30px;
+      z-index: 5;
+      input {
+        pointer-events: auto;
+        height: 32px;
+        padding: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    .add-tab-button-wrapper {
+      pointer-events: none;
+      padding-left: 20px;
+      background: linear-gradient(to left, $third-bg 60%, transparent);
+      margin-left: -30px;
+      z-index: 5;
+
+      .add-tab-button {
+        pointer-events: auto;
+        background: $note-background;
+        padding: 4px 8px;
+        height: $tab-height;
+        border-radius: $tab-height / 3;
+      }
+    }
   }
 }
