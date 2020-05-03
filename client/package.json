@@ -9,6 +9,7 @@
     "dotenv": "^8.2.0",
     "font-awesome": "^4.7.0",
     "fuse.js": "^3.2.1",
+    "http-proxy-middleware": "^1.0.3",
     "jquery": "^3.5.0",
     "popper.js": "^1.14.4",
     "radium": "^0.26.0",
