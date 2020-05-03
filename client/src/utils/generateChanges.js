@@ -199,14 +199,12 @@ const getEditStarChanges = (stars, toEditStarId, edits, byIdMap = null) => {
     [toEditStarId]: {
       operation: "update",
       current: toEditStar,
-      changed: {
-        ...edits
-      },
+      changed: edits,
       // Mark change as 'simple' if provided edits only change the 'data' field.
       // Backend will not perform sync validation on the data field when this is provided
       isSimpleEdit: (Object.keys(edits).length === 1 && "data" in edits)
     }
   }
-}
+};
 
 export {getMoveStarChanges, getRemoveStarChanges, getRemoveAllStarsUnderParentChanges, getAddStarChanges, getEditStarChanges};

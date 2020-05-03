@@ -1,5 +1,9 @@
-.test {
-    border-color: yellow;
+@import "variables";
+@import "NoteSectionTabs";
+
+.entity-container {
+    background: $third-bg;
+    color: $secondary-text;
 }
 
 .react-tabs__tab-list {
@@ -8,7 +12,6 @@
     overflow: scroll;
     white-space: nowrap;
 }
-
 
 ::-webkit-scrollbar {
     display: none;
@@ -28,10 +31,11 @@
 }
 /* Injecting own colors into Nestable classes */
 .nestable-item.is-dragging:before {
-    background: rgba(98, 168, 255, 0.2);
+    background: $placement-background;
+    //background: rgba(98, 168, 255, 0.2);
     /*rgba(164, 202, 236, 0.19);*/
-    border: 2px solid rgba(98, 168, 255, 0.5);
-    border-radius: 0;
+    border: teal; //2px solid rgba(98, 168, 255, 0.5);
+    border-radius: 10px;
 }
 
 .nestable-item:hover {

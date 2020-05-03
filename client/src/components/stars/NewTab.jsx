@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import { Tab } from 'react-tabs';
-import { connect } from 'react-redux'
+import {Tab} from 'react-tabs';
+import {connect} from 'react-redux'
 import {addPopup} from "../../actions/globalActions";
 import {POPUP_TYPE} from "../general/Popup";
+import {XIcon} from "../general/Common";
 
 class NewTab extends Component {
 
@@ -32,11 +33,11 @@ class NewTab extends Component {
 
   handleSubmit(event) {
     event.preventDefault();
-    if(this.validTabName(this.state.val)) {
+    if (this.validTabName(this.state.val)) {
       this.props.onNewNote(event, this.state.val);
 
       // Empty out input box
-      this.setState({val: ''});
+      this.setState({val: '', adding: false});
     }
   }
 
@@ -44,26 +45,37 @@ class NewTab extends Component {
     this.setState({val: event.target.value});
   }
 
-  render() {
-    if (!this.state.adding) {
-      return (
-        <Tab onClick={(e) => this.setState({adding: true})}>
-          <div>{"+"}</div>
-        </Tab>
-      );
-    }
+  renderAddButton = () => {
     return (
-      <Tab>
-        <form onSubmit={this.handleSubmit}>
-              <input className="form-control py-2"
+        <div className="add-tab-button-wrapper" onClick={() => this.setState({adding: true})}>
+          <div className="add-tab-button">+</div>
+        </div>
+    )
+  }
+
+  renderAddNewTab = () => {
+    return (
+        <div className="add-tab-input-wrapper">
+          <div className="note note-tab">
+            <form onSubmit={this.handleSubmit}>
+              <input className="star-input"
                      autoFocus
-                     onBlur={(e) => {this.setState({adding: false})}}
+                     onBlur={(e) => this.setState({adding: false})}
                      placeholder="New tab"
                      value={this.state.val}
-                     onChange={this.handleChange} />
-        </form>
-      </Tab>
+                     onChange={this.handleChange}/>
+            </form>
+          </div>
+        </div>
     );
+  }
+
+  render() {
+    return (
+        <div className="add-tab">
+          {this.state.adding ? this.renderAddNewTab() : this.renderAddButton()}
+        </div>
+    )
   }
 }
 

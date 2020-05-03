@@ -1,4 +1,5 @@
 import React from 'react';
+import TextareaAutosize from "react-textarea-autosize";
 
 export default class NewNoteInput extends React.Component {
   constructor(props) {
@@ -13,6 +14,12 @@ export default class NewNoteInput extends React.Component {
     this.setState({newNoteValue: event.target.value});
   };
 
+  handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      this.handleOnSubmit(e);
+    }
+  };
+
   handleOnSubmit = (event) => {
     if (this.props.onSubmit(event, this.state.newNoteValue)) {
       // submit was successful, clear out input field
@@ -22,24 +29,15 @@ export default class NewNoteInput extends React.Component {
 
   render() {
     return (
-        <form onSubmit={this.handleOnSubmit}>
-          <div className="row search-bar-container-space">
-            <div className="input-group col-12">
-              <input
-                  className="form-control search-bar"
-                  placeholder="New Note"
-                  value={this.state.newNoteValue}
-                  onChange={this.handleNewNoteChange}
-                  type="text"
-              />
-              <div className="input-group-append">
-                <button className="btn btn-outline-secondary" type="submit">
-                  <i className="fa fa-plus" aria-hidden="true"/> Add
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
+        <div className="note">
+          <TextareaAutosize className="star-input"
+                            onChange={this.handleNewNoteChange}
+                            value={this.state.newNoteValue}
+                            onKeyPress={this.handleKeyPress}
+                            maxRows={6}
+                            placeholder={"Add a new note"}
+          />
+        </div>
     )
   }
 }

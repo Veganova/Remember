@@ -4,10 +4,9 @@ import {connect} from 'react-redux';
 import * as starActions from '../../actions/starActions';
 import {POPUP_TYPE} from '../general/Popup';
 import {addPopup} from "../../actions/globalActions";
-import {formatStars, getById, searchAndFormatStars} from '../../utils/helpers';
+import {formatStars, searchAndFormatStars} from '../../utils/helpers';
 import Nestable from 'react-nestable';
 import SingleStarView from "./SingleStarView";
-import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import SearchBar from "./SearchBar";
 import NewTab from "./NewTab";
@@ -15,42 +14,36 @@ import '../styles/StarView.scss'
 import '../styles/SearchBar.scss';
 import Logout from "./Logout";
 import NewNoteInput from "./NewNoteInput";
+import NoteSectionsTabs from "./NoteSectionTabs";
 
 
 class StarView extends Component {
 
   constructor(props) {
     super(props);
-    this.nullStarId = -1;
-    this.state = {searchTerm: '', tabIndex: 0, lastTabIndex: 0, selectedStar: this.nullStarId};
+    this.state = {searchTerm: '', selectedSectionId: null, tabIndex: 0, lastTabIndex: 0};
 
-    this.displayStar = this.displayStar.bind(this);
     this.onSearchBarChange = this.onSearchBarChange.bind(this);
-    this.starSelected = this.starSelected.bind(this);
   }
 
-  starSelected(star) {
-    let starId = this.nullStarId;
-    if (star) {
-      starId = star._id
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.star && !this.state.selectedSectionId) {
+      const firstTabSection = this.props.star.find(star => star.parentId === star.userId);
+      this.setState({selectedSectionId: firstTabSection._id});
     }
-    this.setState({selectedStar: starId})
   }
 
-  displayStar(star) {
+  displayStar = (star) => {
     return <SingleStarView
         stars={this.props.star}
         star={star}
-        isSelected={star._id === this.state.selectedStar}
-        selected={this.starSelected}
         onAddNewNote={this.handleNewNoteSubmit}
         onRemove={this.removeStar}
         onEdit={this.editStar}
     />;
-  }
+  };
 
-
-  checkLock = (errorMessage="Service operation ongoing, app is currently locked.") =>  {
+  checkLock = (errorMessage = "Service operation ongoing, app is currently locked.") => {
     if (this.props.lock.length > 0) {
       console.warn(this.props.lock);
       this.props.addPopup(errorMessage, POPUP_TYPE.ERROR);
@@ -59,7 +52,7 @@ class StarView extends Component {
     return true;
   };
 
-  handleNewNoteSubmit = (parentId, prev=true, next=null) => (event, value) => {
+  handleNewNoteSubmit = (parentId, prev = true, next = null) => (event, value) => {
     event.preventDefault();
 
     if (this.checkLock(`Couldn't add note: ${value}`)) {
@@ -89,68 +82,37 @@ class StarView extends Component {
 
   removeChildren = (parentId) => {
     if (this.checkLock()) {
-      // console.log(this.props.star.filter(star => star._id === parentId));
       this.props.removeChildren(this.props.star, parentId);
     }
   };
 
-  displayRemove(star) {
-    // Do note have delete option for the two default tabs
-    const userId = this.props.auth["_id"]
-    if (!(star.parentId === userId && (star.data === 'Trash' || star.data === 'Notes'))) {
-      return <i className="fa fa-times gray" aria-hidden="true" onClick={() => this.removeStar(star._id)}/>
-    }
-  }
-
-  displayStars() {
-    let prevId = "";
-    return (
-        <TabList>
-          {_.map(this.formattedStars, (star) => {
-            prevId = star._id;
-            return (
-                <Tab key={star._id}>
-                  {star.data + " "}
-                  {this.displayRemove(star)}
-                </Tab>
-            )
-          })}
-          <NewTab prevId={prevId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
-        </TabList>
-    )
-  }
-
   displayChildStars() {
+    let star = this.formattedStars.find(formattedStar => formattedStar._id === this.state.selectedSectionId);
+    star = star || this.formattedStars[0];
+    let d = {};
+    if (star.addDisabled) {
+      d = {'disabled': 'disabled'}
+    }
     return (
-        <div className="single-tab">
-          {_.map(this.formattedStars, (star) => {
-            let d = {};
-            if (star.addDisabled) {
-              d = {'disabled': 'disabled'}
-            }
-            return (
-                <TabPanel className="form-group tab-pane" key={star['_id']}>
-                  {/* Displays the hierarchy of notes */}
-                  {this.displayStarsFull(star.childStars, star)}
-                  <hr className="col-xs-12"/>
-                  <fieldset {...d}>
-                    <NewNoteInput onSubmit={this.handleNewNoteSubmit(star._id)}/>
-                  </fieldset>
-                  <div>
-                    <div className="float-right">
-                      <button className="btn btn-danger" onClick={() => {
-                        this.removeChildren(star._id);
-                      }}>
-                        <i className="fa fa-minus"/>
-                        Delete All
-                      </button>
-                    </div>
-                  </div>
-                </TabPanel>
-            );
-          })}
-        </div>
-    )
+        <React.Fragment>
+          {/* Displays the hierarchy of notes */}
+          {this.displayStarsFull(star.childStars, star)}
+          <hr className="col-xs-12"/>
+          <fieldset {...d}>
+            <NewNoteInput onSubmit={this.handleNewNoteSubmit(star._id)}/>
+          </fieldset>
+          <div>
+            <div className="float-right">
+              <button className="btn btn-danger" onClick={() => {
+                this.removeChildren(star._id);
+              }}>
+                <i className="fa fa-minus"/>
+                Delete All
+              </button>
+            </div>
+          </div>
+        </React.Fragment>
+    );
   }
 
   displayStarsFull(items, parentStar) {
@@ -189,7 +151,7 @@ class StarView extends Component {
               }
 
               // update database
-             this.moveStar(updatedItem._id, newParentOfMovedStar._id, prevNeighbor, nextNeighbor);
+              this.moveStar(updatedItem._id, newParentOfMovedStar._id, prevNeighbor, nextNeighbor);
             }}
         />
     )
@@ -208,14 +170,27 @@ class StarView extends Component {
     }
   }
 
+  displayTabs = () => {
+    const lastStarId = this.formattedStars[this.formattedStars.length - 1];
+    return (
+        <div className="top-note-bar">
+          <NoteSectionsTabs
+              starSections={this.formattedStars}
+              moveSection={this.moveStar}
+              onSectionSelect={(starId) => this.setState({selectedSectionId: starId})}
+              selectedSectionId={this.state.selectedSectionId}
+              removeSection={this.removeStar}
+          />
+          <NewTab prevId={lastStarId} onNewNote={this.handleNewNoteSubmit(this.props.auth._id)}/>
+        </div>
+    )
+  }
+
   displayAllStars() {
-    let index = this.state.tabIndex;
     return (
         <div className="">
-          <Tabs selectedIndex={index} onSelect={tabIndex => this.setState({tabIndex, lastTabIndex: tabIndex})}>
-            {this.displayStars()}
-            {this.displayChildStars()}
-          </Tabs>
+          {this.displayTabs()}
+          {this.displayChildStars()}
         </div>
     )
   }
@@ -271,7 +246,7 @@ class StarView extends Component {
         this.formattedStars = searchAndFormatStars(this.state.searchTerm, this.props.star, this.props.auth["_id"]);//formatStars(this.props.auth['_id'], this.search(this.props.star, this.state.searchTerm));
       }
       return (
-          <div className="container-fluid">
+          <div className="entity-container container-fluid">
             <Logout/>
             {this.addSearchBar()}
             {this.displayAllStars()}
