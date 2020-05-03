@@ -1,6 +1,6 @@
 import assert from 'assert';
 import {getAddStarChanges, getRemoveStarChanges, getMoveStarChanges} from "./generateChanges";
-import {getById} from "../helpers";
+import {getById} from "./helpers";
 
 const USER_ID = 'user_id';
 const sampleStars = [
