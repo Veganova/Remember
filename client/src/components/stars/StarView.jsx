@@ -15,6 +15,7 @@ import '../styles/SearchBar.scss';
 import Logout from "./Logout";
 import NewNoteInput from "./NewNoteInput";
 import NoteSectionsTabs from "./NoteSectionTabs";
+import UndoDetector from "./UndoDetector";
 
 
 class StarView extends Component {
@@ -247,6 +248,7 @@ class StarView extends Component {
       }
       return (
           <div className="entity-container container-fluid">
+            <UndoDetector/>
             <Logout/>
             {this.addSearchBar()}
             {this.displayAllStars()}

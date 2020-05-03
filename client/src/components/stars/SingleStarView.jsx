@@ -16,16 +16,28 @@ class SingleStarView extends Component {
     this.focusInput();
   }
 
-  componentDidUpdate() {
-    this.focusInput();
+  componentDidUpdate(prevProps, prevState) {
+    this.focusInput(prevProps.focus);
   }
 
-  focusInput = () => {
-    if (this.props.focus === this.props.star._id) {
+  focusInput = (prevFocus) => {
+    // Focus just changed to the current note.
+    if (prevFocus !== this.props.star._id && this.props.focus === this.props.star._id) {
       this.textArea.focus();
-      this.props.changeFocus(null);
     }
   };
+
+  updateFocus = (isFocused) => {
+    if (!isFocused) {
+      if (this.props.focus !== null) {
+        this.props.changeFocus(null);
+      }
+    } else {
+      if (this.props.focus !== this.props.star._id) {
+        this.props.changeFocus(this.props.star._id);
+      }
+    }
+  }
 
   handleKeyPress = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -71,7 +83,8 @@ class SingleStarView extends Component {
                   value={meta + star.data}
                   onKeyPress={this.handleKeyPress}
                   onKeyDown={this.handleKeyUp}
-                  // onBlur={() => this.props.selected(null)}
+                  onFocus={() => this.updateFocus(true)}
+                  onBlur={() => this.updateFocus(false)}
                   maxRows={3}
         />
     );
