@@ -58,4 +58,29 @@ const applyChanges = (stars, changes) => {
   return stars;
 };
 
-export {applyChanges};
+const reverseOperation = (operation) => {
+  switch(operation) {
+    case "add":
+      return "delete";
+    case "delete":
+      return "add";
+    case "update":
+      return "update";
+    default:
+      throw "No such operation, cannot reverse " + operation;
+  }
+
+};
+
+const getReversedChange = (change) => {
+  return {
+    operation: reverseOperation(change.operation),
+    current: change.current && {
+      _id: change.current._id,
+      ... change.changed
+    },
+    changed: change.current,
+  }
+};
+
+export {applyChanges, getReversedChange};

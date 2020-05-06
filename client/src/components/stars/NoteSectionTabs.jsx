@@ -130,7 +130,6 @@ class NoteSections extends React.Component {
   };
 
   render() {
-    console.log(this.props.starSections);
     return (
         <DragDropContext onDragEnd={this.handleDragEnd}>
           <Droppable droppableId="droppable" direction="horizontal">

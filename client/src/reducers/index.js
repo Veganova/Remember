@@ -5,6 +5,7 @@ import starReducer from './starReducer';
 import popupReducer from './popupReducer';
 import lockReducer from "./lockReducer";
 import focusReducer from "./focusReducer";
+import undoReducer from "./undoReducer";
 
 export default combineReducers({
   auth: authReducer,
@@ -12,5 +13,6 @@ export default combineReducers({
   popups: popupReducer,
   lock: lockReducer,
   focus: focusReducer,
+  changes: undoReducer,
   form: reduxForm
 })

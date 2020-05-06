@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux'
+import {undo, redo} from "../../actions/starActions";
 class UndoDetector extends Component {
 
   componentWillMount(){
@@ -11,8 +12,20 @@ class UndoDetector extends Component {
   }
 
   _handleUndoPress = event => {
-    if(this.props.focus === null && (event.ctrlKey || event.metaKey) && event.key === 'z') {
-      console.log("Trigger UNDO", this.props.focus);
+    if((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+      const stack = this.props.changes.undoStack;
+      if (stack.length > 0) {
+        const undoChange = stack[stack.length-1];
+        console.log("Trigger UNDO", undoChange);
+        this.props.undo(undoChange);
+      }
+    } else if((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') {
+      const stack = this.props.changes.redoStack;
+      if (stack.length > 0) {
+        const redoChange = stack[stack.length-1];
+        console.log("Trigger REDO", redoChange);
+        this.props.redo(redoChange);
+      }
     }
   };
 
@@ -23,8 +36,8 @@ class UndoDetector extends Component {
 
 }
 
-function mapStateToProps({focus}) {
-  return {focus};
+function mapStateToProps({focus, changes}) {
+  return {focus, changes};
 }
 
-export default connect(mapStateToProps, null)(UndoDetector);
+export default connect(mapStateToProps, {undo, redo})(UndoDetector);

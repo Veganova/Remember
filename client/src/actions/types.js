@@ -10,3 +10,7 @@ export const ADD_LOCK = "add_lock";
 export const REMOVE_LOCK = "remove_lock";
 
 export const CHANGE_FOCUS = 'change_focus';
+
+export const UNDO = "undo";
+export const REDO = "redo";
+export const REGULAR_CHANGE = "regular";

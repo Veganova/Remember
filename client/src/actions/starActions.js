@@ -15,8 +15,12 @@ import {
   ADD_LOCK,
   REMOVE_LOCK,
   ADD_POPUP,
-  CHANGE_FOCUS
+  CHANGE_FOCUS, UNDO, REGULAR_CHANGE, REDO
 } from './types';
+import {getReversedChange} from "../utils/applyChanges";
+
+
+const updateLocal = (dispatch, changes, changeType=REGULAR_CHANGE) => dispatch({type: UPDATE_LOCAL_STARS, payload: {changes, changeType}});
 
 // Returns false when the BE response is invaid and contain errors.
 // Also triggers a popup which will show in the UI to the user.
@@ -54,7 +58,7 @@ const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
   if (res) {
     const temporaryKey = Object.keys(res.data)[0];
     const focus = res.data[temporaryKey]['saved']._id;
-    dispatch({type: UPDATE_LOCAL_STARS, payload: {changes: res.data}});
+    updateLocal(dispatch, res.data);
     dispatch({type: CHANGE_FOCUS, payload: {focus}});
   }
 };
@@ -63,7 +67,7 @@ const addStar = (stars, data, parentId, prevId, nextId) => async dispatch => {
 const moveStar = (stars, toMoveStarId, parentId, prevId, nextId) => async dispatch => {
   const changes = getMoveStarChanges(stars, toMoveStarId, parentId, prevId, nextId);
   const toMoveStar = changes[toMoveStarId]['current'];
-  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateLocal(dispatch, changes);
   if (toMoveStar.parentId !== toMoveStar.userId) {
     dispatch({type: CHANGE_FOCUS, payload: {focus:  toMoveStarId}});
   }
@@ -76,7 +80,7 @@ const removeStar = (stars, id) => async dispatch => {
   const removalStar = changes[id]['current'];
   // TODO #17: don't know why this works but it does. Investigate.
   const focus = removalStar._id; //next || removalStar.prev;
-  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateLocal(dispatch, changes);
   dispatch({type: CHANGE_FOCUS, payload: {focus}});
   updateRemoteAndCheck(dispatch, changes);
 };
@@ -84,7 +88,7 @@ const removeStar = (stars, id) => async dispatch => {
 const editStarRemote = _.debounce(updateRemoteAndCheck, 500);
 const editStar = (stars, id, edits) => async dispatch => {
   const changes = getEditStarChanges(stars, id, edits);
-  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateLocal(dispatch, changes);
   editStarRemote(dispatch, changes);
 };
 
@@ -92,7 +96,18 @@ const editStar = (stars, id, edits) => async dispatch => {
 const removeChildren = (stars, parentId) => async dispatch => {
   const starsCopied = JSON.parse(JSON.stringify(stars));
   const changes = getRemoveAllStarsUnderParentChanges(starsCopied, parentId);
-  dispatch({type: UPDATE_LOCAL_STARS, payload: {changes}});
+  updateLocal(dispatch, changes);
+  updateRemoteAndCheck(dispatch, changes);
+};
+
+const undo = (toUndoChanges) => async dispatch => {
+  const changes = _.mapValues(toUndoChanges, (change) => getReversedChange(change));
+  updateLocal(dispatch, changes, UNDO);
+  updateRemoteAndCheck(dispatch, changes);
+};
+
+const redo = (changes) => async dispatch => {
+  updateLocal(dispatch, changes, REDO);
   updateRemoteAndCheck(dispatch, changes);
 };
 
@@ -103,5 +118,7 @@ export {
   removeStar,
   removeChildren,
   editStar,
-  moveStar
+  moveStar,
+  undo,
+  redo,
 };
